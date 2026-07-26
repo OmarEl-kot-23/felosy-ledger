@@ -1,0 +1,2504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فلوسي — Payday Ledger</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --green-deep:#0B4A38;
+    --green-mid:#0F5F47;
+    --gold:#F0B429;
+    --gold-soft:#F7D77E;
+    --papyrus:#FBF3DE;
+    --papyrus-dark:#EFE2BC;
+    --ink:#0E2A21;
+    --red:#C13B33;
+    --teal:#12A783;
+    --pink:#E85D8C;
+    --line:rgba(14,42,33,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(circle at 15% 8%, rgba(240,180,41,0.16), transparent 40%),
+      radial-gradient(circle at 90% 90%, rgba(18,167,131,0.14), transparent 45%),
+      var(--green-deep);
+    font-family:'Tajawal', sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:28px 14px 60px;
+  }
+  .phone{
+    width:420px;
+    max-width:100%;
+    background:var(--papyrus);
+    border-radius:30px;
+    border:6px solid var(--ink);
+    box-shadow:0 30px 60px rgba(0,0,0,0.45), 0 0 0 3px var(--gold) inset;
+    overflow:hidden;
+    position:relative;
+  }
+  /* START SCREEN */
+  .start-screen{
+    padding:26px 22px 30px;
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.04) 0 10px, transparent 10px 20px),
+      linear-gradient(170deg, var(--green-mid), var(--green-deep));
+    color:var(--papyrus);
+  }
+  .start-brand{font-weight:900; font-size:26px; text-align:center; margin-bottom:2px;}
+  .start-brand .ar{color:var(--gold-soft); font-size:28px;}
+  .start-sub{text-align:center; font-size:12.5px; opacity:0.8; margin-bottom:22px;}
+  .mode-card{
+    background:rgba(251,243,222,0.06);
+    border:1.5px solid rgba(251,243,222,0.25);
+    border-radius:16px;
+    padding:15px 16px;
+    margin-bottom:12px;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .mode-card:hover, .mode-card:active{background:rgba(240,180,41,0.14); border-color:var(--gold);}
+  .mode-card .mtitle{font-weight:800; font-size:15px; display:flex; align-items:center; gap:8px;}
+  .mode-card .mdesc{font-size:11.5px; opacity:0.78; margin-top:5px; line-height:1.5;}
+  .mode-tag{
+    display:inline-block; font-size:9px; font-weight:800; text-transform:uppercase; letter-spacing:0.5px;
+    background:var(--gold); color:var(--ink); padding:2px 7px; border-radius:20px; margin-left:6px;
+  }
+  .setup-input, #setName{
+    width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid rgba(251,243,222,0.35);
+    background:rgba(251,243,222,0.1); color:var(--papyrus); font-family:inherit; font-size:14px;
+  }
+  .setup-input::placeholder, #setName::placeholder{color:rgba(251,243,222,0.45);}
+  #setupScreen .modal-field label{color:var(--gold-soft); font-size:11.5px; font-weight:700; display:block; margin-bottom:5px;}
+  #setupScreen .modal-field{margin-bottom:12px;}
+
+  /* HEADER */
+  .app-header{
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.05) 0 10px, transparent 10px 20px),
+      linear-gradient(160deg, var(--green-mid), var(--green-deep));
+    color:var(--papyrus);
+    padding:20px 20px 16px;
+    position:relative;
+    border-bottom:4px solid var(--gold);
+  }
+  .brand-row{display:flex; align-items:center; justify-content:space-between; gap:8px;}
+  .brand{
+    font-weight:900;
+    font-size:22px;
+    letter-spacing:0.5px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .brand .ar{font-size:24px; color:var(--gold-soft);}
+  .header-actions{display:flex; align-items:center; gap:6px;}
+  .mode-pill{
+    font-size:10.5px;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.6px;
+    background:rgba(240,180,41,0.18);
+    border:1px solid var(--gold);
+    color:var(--gold-soft);
+    padding:5px 10px;
+    border-radius:20px;
+    white-space:nowrap;
+  }
+  .reset-btn{
+    width:30px; height:30px; border-radius:50%;
+    background:rgba(251,243,222,0.12); border:1px solid rgba(251,243,222,0.35);
+    color:var(--papyrus); font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  }
+  .player-line{
+    margin-top:14px;
+    display:flex;
+    gap:10px;
+  }
+  .player-line input{
+    background:rgba(251,243,222,0.1);
+    border:1px solid rgba(251,243,222,0.35);
+    border-radius:10px;
+    color:var(--papyrus);
+    padding:9px 12px;
+    font-family:inherit;
+    font-size:13.5px;
+    font-weight:500;
+    flex:1;
+    min-width:0;
+  }
+  .player-line input::placeholder{color:rgba(251,243,222,0.55);}
+
+  /* TABS */
+  .tabs{
+    display:flex;
+    background:var(--papyrus-dark);
+    border-bottom:1px solid var(--line);
+  }
+  .tab{
+    flex:1;
+    text-align:center;
+    padding:11px 6px;
+    font-size:12px;
+    font-weight:700;
+    color:rgba(14,42,33,0.5);
+    cursor:pointer;
+    border-bottom:3px solid transparent;
+    transition:.15s;
+    user-select:none;
+  }
+  .tab.active{color:var(--green-deep); border-bottom-color:var(--gold); background:var(--papyrus);}
+  .tab:hover{color:var(--green-deep);}
+
+  .screen{display:none; padding:18px 18px 26px;}
+  .screen.active{display:block; animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);}}
+
+  /* SECTION LABEL */
+  .section-eyebrow{
+    font-size:10.5px;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:1.2px;
+    color:var(--green-mid);
+    margin:0 0 8px 2px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .section-eyebrow::before{content:''; width:6px; height:6px; border-radius:50%; background:var(--gold); display:inline-block;}
+
+  /* GAUGE — signature element (reused for Hustle cashflow + Safe Zone earnings) */
+  .gauge-card{
+    background:linear-gradient(155deg, var(--green-mid), var(--green-deep));
+    border-radius:18px;
+    padding:18px 18px 16px;
+    color:var(--papyrus);
+    position:relative;
+    overflow:hidden;
+    border:2px solid var(--ink);
+    box-shadow:0 8px 0 rgba(0,0,0,0.15);
+  }
+  .gauge-card::after{
+    content:'';
+    position:absolute; inset:0;
+    background:repeating-linear-gradient(45deg, rgba(240,180,41,0.05) 0 8px, transparent 8px 16px);
+    pointer-events:none;
+  }
+  .gauge-top{display:flex; justify-content:space-between; align-items:flex-start;}
+  .gauge-label{font-size:11px; text-transform:uppercase; letter-spacing:1px; font-weight:700; color:var(--gold-soft); opacity:0.9;}
+  .gauge-value{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:38px;
+    font-weight:600;
+    margin-top:4px;
+    display:flex; align-items:baseline; gap:6px;
+  }
+  .gauge-value small{font-size:15px; opacity:0.7; font-family:'Tajawal';}
+  .gauge-bar-track{
+    margin-top:14px;
+    height:10px;
+    background:rgba(251,243,222,0.15);
+    border-radius:6px;
+    overflow:hidden;
+    display:flex;
+  }
+  .gauge-bar-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--teal), var(--gold));
+    border-radius:6px;
+    transition:width .5s cubic-bezier(.4,0,.2,1);
+  }
+  .gauge-sub{
+    display:flex; justify-content:space-between;
+    margin-top:9px;
+    font-size:11px;
+    font-family:'IBM Plex Mono', monospace;
+    color:rgba(251,243,222,0.75);
+  }
+  .gauge-sub b{color:var(--papyrus); font-weight:600;}
+
+  /* CASH ON HAND strip */
+  .cash-strip{
+    margin-top:12px;
+    display:flex;
+    gap:10px;
+  }
+  .cash-box{
+    flex:1;
+    background:var(--papyrus);
+    border:2px solid var(--ink);
+    border-radius:14px;
+    padding:12px 14px;
+    box-shadow:0 4px 0 var(--line);
+  }
+  .cash-box .lbl{font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; color:var(--green-mid);}
+  .cash-box .val{font-family:'IBM Plex Mono', monospace; font-size:20px; font-weight:600; margin-top:3px;}
+  .cash-box.cash .val{color:var(--ink);}
+  .cash-box.pending .val{color:var(--red);}
+
+  /* PAYDAY BUTTON */
+  .payday-btn{
+    margin-top:14px;
+    width:100%;
+    background:var(--gold);
+    border:2px solid var(--ink);
+    border-radius:14px;
+    padding:14px;
+    font-family:inherit;
+    font-weight:800;
+    font-size:15px;
+    color:var(--ink);
+    cursor:pointer;
+    box-shadow:0 5px 0 #b98413;
+    transition:transform .08s;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+  .payday-btn:active{transform:translateY(3px); box-shadow:0 2px 0 #b98413;}
+  .payday-btn .dice{font-size:18px;}
+
+  /* physical cash cue banner */
+  .physical-cue{
+    margin-top:10px;
+    background:rgba(240,180,41,0.14);
+    border:1.5px dashed var(--gold);
+    border-radius:12px;
+    padding:10px 12px;
+    font-size:12px;
+    color:var(--green-deep);
+    line-height:1.5;
+    display:none;
+  }
+  .physical-cue.show{display:block; animation:fadeIn .3s ease;}
+  .physical-cue b{color:var(--red);}
+  .bill-row{display:flex; gap:6px; margin-top:8px; flex-wrap:wrap;}
+  .bill{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:700;
+    font-size:11.5px;
+    background:var(--teal);
+    color:#fff;
+    padding:4px 8px;
+    border-radius:5px;
+    border:1px solid rgba(0,0,0,0.25);
+  }
+
+  .badge-strip{
+    display:flex; align-items:center; gap:8px; margin-top:10px;
+    background:rgba(240,180,41,0.18); border:1.5px dashed var(--gold); border-radius:12px;
+    padding:9px 12px; font-size:12px; color:var(--green-deep); font-weight:700; display:none;
+  }
+  .badge-strip.show{display:flex;}
+  .badge-strip button{
+    margin-left:auto; background:var(--ink); color:var(--gold-soft); border:none; border-radius:8px;
+    padding:6px 9px; font-size:10.5px; font-weight:700; cursor:pointer; white-space:nowrap;
+  }
+
+  /* WIN BANNER */
+  .win-banner{
+    display:none;
+    margin-top:14px;
+    background:linear-gradient(135deg, var(--gold), #ffd76a);
+    border:2px solid var(--ink);
+    border-radius:16px;
+    padding:16px;
+    text-align:center;
+    box-shadow:0 6px 0 #b98413;
+  }
+  .win-banner.show{display:block; animation:fadeIn .4s ease;}
+  .win-banner .wtitle{font-size:17px; font-weight:900; color:var(--ink);}
+  .win-banner .wsub{font-size:12px; color:var(--ink); opacity:0.75; margin-top:4px;}
+
+  /* LEDGER TABLE STYLES */
+  .ledger-block{margin-top:18px;}
+  .ledger-row{
+    display:grid;
+    grid-template-columns:1fr 90px;
+    gap:8px;
+    align-items:center;
+    padding:8px 4px;
+    border-bottom:1px solid var(--line);
+  }
+  .ledger-row:last-child{border-bottom:none;}
+  .ledger-row label{font-size:13px; font-weight:500; color:var(--ink);}
+  .ledger-row input{
+    font-family:'IBM Plex Mono', monospace;
+    text-align:right;
+    padding:6px 8px;
+    border-radius:8px;
+    border:1.5px solid var(--line);
+    background:#fff;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .ledger-row input:focus{outline:none; border-color:var(--gold);}
+  .ledger-row.child-row{grid-template-columns:1fr auto;}
+  .stepper{display:flex; align-items:center; gap:10px;}
+  .stepper button{
+    width:26px; height:26px; border-radius:50%; border:1.5px solid var(--ink); background:var(--gold); color:var(--ink);
+    font-weight:800; font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0; line-height:1;
+  }
+  .stepper button.minus, .stepper button:first-child{background:#fff;}
+  .stepper button:disabled{opacity:0.3; cursor:not-allowed;}
+  .stepper .step-val{font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:14px; min-width:14px; text-align:center;}
+  .ledger-total{
+    display:grid;
+    grid-template-columns:1fr 90px;
+    gap:8px;
+    padding:9px 4px 4px;
+    font-weight:800;
+    font-size:13.5px;
+  }
+  .ledger-total.income{color:var(--green-mid);}
+  .ledger-total.expense{color:var(--red);}
+  .ledger-total span:last-child{font-family:'IBM Plex Mono', monospace; text-align:right;}
+
+  /* ASSETS / EVENTS list */
+  .item-card{
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:12px;
+    padding:11px 13px;
+    margin-bottom:8px;
+  }
+  .item-card .top-row{display:flex; justify-content:space-between; align-items:flex-start;}
+  .item-card .meta{font-size:11px; color:rgba(14,42,33,0.55); margin-top:2px; line-height:1.5;}
+  .item-card .name{font-weight:700; font-size:13.5px;}
+  .item-card .amt{font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:13.5px;}
+  .amt.pos{color:var(--teal);}
+  .amt.neg{color:var(--red);}
+  .del-x{
+    background:none; border:none; color:rgba(14,42,33,0.35); font-size:15px; cursor:pointer; margin-left:8px;
+  }
+  .asset-tag{
+    font-size:9.5px; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
+    padding:2px 7px; border-radius:5px; margin-right:6px; display:inline-block;
+  }
+  .asset-tag.stock{background:#DCEEFB; color:#1B6EA8;}
+  .asset-tag.startup{background:#FBE7CE; color:#A0530A;}
+  .asset-tag.income{background:#DFF3E9; color:#0F6B4C;}
+  .asset-tag.dormant{background:#F1E4E4; color:#8a3a3a;}
+
+  .stock-card{
+    background:#fff; border:1.5px solid var(--line); border-radius:12px;
+    padding:11px 13px; margin-bottom:8px;
+  }
+  .stock-top{display:flex; justify-content:space-between; align-items:flex-start;}
+  .stock-meta{font-size:11px; color:rgba(14,42,33,0.55); margin-top:3px; line-height:1.5;}
+  .stock-price-row{display:flex; align-items:baseline; gap:6px; margin-top:2px;}
+  .stock-price{font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:15px;}
+  .stock-change{font-family:'IBM Plex Mono', monospace; font-size:11.5px; font-weight:700;}
+  .stock-change.up{color:var(--teal);}
+  .stock-change.down{color:var(--red);}
+  .mini-btns{display:flex; gap:6px; margin-top:9px; flex-wrap:wrap;}
+  .mini-btn{
+    flex:1; font-family:inherit; font-size:11px; font-weight:700; padding:7px 4px;
+    border-radius:8px; border:1.5px solid var(--ink); background:var(--papyrus); cursor:pointer;
+  }
+  .mini-btn.sell{background:var(--red); color:#fff; border-color:var(--red);}
+  .mini-btn.activate{background:var(--gold); color:var(--ink); border-color:var(--gold);}
+  .mini-btn.roll{background:#fff;}
+
+  .quick-cash-btn{
+    width:100%; margin-top:10px; background:var(--ink); color:var(--gold-soft);
+    border:2px solid var(--ink); border-radius:12px; padding:12px; font-family:inherit;
+    font-weight:800; font-size:13.5px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px;
+  }
+
+  .empty-note{font-size:12px; color:rgba(14,42,33,0.5); text-align:center; padding:14px 0; font-style:italic;}
+
+  .event-btns{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px;}
+  .event-btn{
+    flex:1 1 calc(50% - 8px);
+    background:var(--papyrus);
+    border:1.5px solid var(--ink);
+    border-radius:11px;
+    padding:11px 8px;
+    font-family:inherit;
+    font-weight:700;
+    font-size:12px;
+    cursor:pointer;
+    box-shadow:0 3px 0 var(--line);
+    transition:transform .08s;
+    text-align:center;
+  }
+  .event-btn:active{transform:translateY(2px); box-shadow:none;}
+  .event-btn.buy{background:#fff; border-color:var(--teal); color:var(--teal);}
+  .event-btn.fine{background:#fff; border-color:var(--red); color:var(--red);}
+  .event-btn.loan{background:#fff; border-color:var(--gold); color:#8a6408;}
+  .event-btn.big{background:var(--ink); color:var(--gold-soft); border-color:var(--ink); flex:1 1 100%;}
+
+  .footnote{
+    margin-top:18px;
+    font-size:11px;
+    color:rgba(14,42,33,0.55);
+    text-align:center;
+    line-height:1.6;
+    padding:0 6px;
+  }
+
+  /* TURN TRACKER + LOG */
+  .turn-card{
+    background:var(--papyrus); border:2px solid var(--ink); border-radius:16px;
+    padding:14px 16px; display:flex; align-items:center; justify-content:space-between;
+    box-shadow:0 4px 0 var(--line);
+  }
+  .turn-card .tlabel{font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:0.8px; color:var(--green-mid);}
+  .turn-card .tval{font-family:'IBM Plex Mono', monospace; font-size:28px; font-weight:700; margin-top:2px;}
+  .turn-btns{display:flex; gap:6px;}
+  .turn-btns button{
+    width:36px; height:36px; border-radius:50%; border:2px solid var(--ink); background:var(--gold);
+    font-weight:800; font-size:16px; cursor:pointer; color:var(--ink);
+  }
+  .turn-btns button.minus{background:#fff;}
+  .log-item{
+    display:flex; align-items:flex-start; gap:8px; padding:9px 4px; border-bottom:1px solid var(--line); font-size:12.5px;
+  }
+  .log-item .lturn{
+    flex-shrink:0; font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:10.5px;
+    background:var(--papyrus-dark); color:var(--green-mid); padding:3px 7px; border-radius:6px; height:fit-content;
+  }
+  .log-item .ltext{line-height:1.5; flex:1;}
+  .log-del{
+    flex-shrink:0; background:none; border:none; color:rgba(14,42,33,0.35); font-size:14px; cursor:pointer; padding:0 2px;
+  }
+  .log-del:hover{color:var(--red);}
+  .undo-btn{
+    margin-top:8px; width:100%; background:#fff; border:1.5px dashed var(--ink); border-radius:12px;
+    padding:10px; font-family:inherit; font-weight:700; font-size:12.5px; cursor:pointer; color:var(--ink);
+    display:none; align-items:center; justify-content:center; gap:6px;
+  }
+  .undo-btn.show{display:flex;}
+
+  /* TOAST */
+  .toast{
+    position:absolute;
+    left:50%;
+    bottom:18px;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--ink);
+    color:var(--gold-soft);
+    padding:10px 18px;
+    border-radius:30px;
+    font-size:12.5px;
+    font-weight:700;
+    opacity:0;
+    pointer-events:none;
+    transition:.3s;
+    max-width:88%;
+    text-align:center;
+    box-shadow:0 8px 20px rgba(0,0,0,0.35);
+    z-index:20;
+  }
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  /* modal */
+  .modal-backdrop{
+    position:absolute; inset:0; background:rgba(11,74,56,0.55);
+    display:none; align-items:flex-end; justify-content:center; z-index:30;
+  }
+  .modal-backdrop.show{display:flex;}
+  .modal{
+    background:var(--papyrus);
+    width:100%;
+    max-height:88%;
+    overflow-y:auto;
+    border-radius:20px 20px 0 0;
+    padding:20px 20px 24px;
+    border-top:4px solid var(--gold);
+    animation:slideUp .25s ease;
+  }
+  @keyframes slideUp{from{transform:translateY(30px); opacity:0;} to{transform:translateY(0); opacity:1;}}
+  .modal h3{margin:0 0 4px; font-size:16px;}
+  .modal p.desc{margin:0 0 14px; font-size:12px; color:rgba(14,42,33,0.6);}
+  .modal-field{margin-bottom:10px;}
+  .modal-field label{font-size:11.5px; font-weight:700; color:var(--green-mid); display:block; margin-bottom:4px;}
+  .modal-field input{
+    width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line);
+    font-family:inherit; font-size:14px;
+  }
+  .modal-actions{display:flex; gap:8px; margin-top:14px;}
+  .modal-actions button{
+    flex:1; padding:12px; border-radius:12px; border:2px solid var(--ink); font-weight:800; font-family:inherit; cursor:pointer;
+  }
+  .modal-actions .confirm{background:var(--gold); color:var(--ink);}
+  .modal-actions .cancel{background:#fff; color:var(--ink);}
+</style>
+</head>
+<body>
+
+<div class="phone" id="phone">
+
+  <!-- START SCREEN -->
+  <div class="start-screen" id="startScreen">
+    <div class="start-brand"><span class="ar">فلوسي</span> Felosy</div>
+    <div class="start-sub" data-i18n="chooseMode">Choose how you want to play</div>
+
+    <div class="mode-card" id="modeHustle">
+      <div class="mtitle">🏃 <span data-i18n="modeHustleTitle">Hustle Zone Only</span></div>
+      <div class="mdesc" data-i18n="modeHustleDesc">Just the survival phase — job, expenses, side hustles, escaping the rat race. No Safe Zone.</div>
+    </div>
+    <div class="mode-card" id="modeSafe">
+      <div class="mtitle">🏦 <span data-i18n="modeSafeTitle">Safe Zone Only</span></div>
+      <div class="mdesc" data-i18n="modeSafeDesc">Jump straight to empire-building — investments, Dream card, donations, Zakat. Start with a purple-sheet income.</div>
+    </div>
+    <div class="mode-card" id="modeTraditional">
+      <div class="mtitle">🎯 <span data-i18n="modeTradTitle">Traditional</span> <span class="mode-tag">Level 1 → 2</span></div>
+      <div class="mdesc" data-i18n="modeTradDesc">Play it as designed: survive the Hustle Zone, then jump (Earnings ×10) into the Safe Zone once you escape.</div>
+    </div>
+  </div>
+
+  <!-- SETUP SCREEN -->
+  <div class="start-screen" id="setupScreen" style="display:none;">
+    <div class="start-brand"><span class="ar">فلوسي</span> Felosy</div>
+    <div class="start-sub" id="setupSub">Roll for your Job card, then fill in your Green Sheet</div>
+
+    <div class="modal-field"><label data-i18n="playerName">Player name</label><input id="setName" type="text" placeholder="e.g. Salma" class="setup-input"></div>
+
+    <div id="hustleSetupFields">
+      <div class="modal-field"><label data-i18n="jobLabel">Job / الوظيفة</label><input id="setJob" type="text" placeholder="e.g. Pharmacist" class="setup-input"></div>
+      <div class="modal-field"><label data-i18n="startSalary">Starting Salary</label><input id="setSalary" type="number" placeholder="4200" class="setup-input"></div>
+      <div class="modal-field"><label data-i18n="startExpenses">Starting Expenses</label><input id="setExp" type="number" placeholder="2600" class="setup-input"></div>
+      <div class="modal-field"><label data-i18n="cashInHand">Cash in Hand</label><input id="setCashInput" type="number" placeholder="3000" class="setup-input"></div>
+    </div>
+
+    <div id="safeSetupFields" style="display:none;">
+      <div class="modal-field"><label data-i18n="startEarnings">Starting Monthly Earnings</label><input id="setEarnings" type="number" placeholder="12000" class="setup-input"></div>
+      <div class="modal-field"><label data-i18n="cashInHand2">Cash in Hand</label><input id="setCashInputSafe" type="number" placeholder="25000" class="setup-input"></div>
+    </div>
+
+    <div class="gauge-card" id="setupCashflowCard" style="margin-top:6px;">
+      <div class="gauge-label" data-i18n="cashflowPreview">Cashflow preview</div>
+      <div class="gauge-value" id="setCashflowPreview">0 <small>EGP</small></div>
+    </div>
+
+    <button class="payday-btn" id="setupConfirmBtn" style="margin-top:16px; width:100%;"><span class="dice">🎲</span> Start Playing</button>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="appRoot" style="display:none;">
+
+    <div class="app-header">
+      <div class="brand-row">
+        <div class="brand"><span class="ar">فلوسي</span> Felosy</div>
+        <div class="header-actions">
+          <div class="mode-pill" id="modePill">Hustle Zone</div>
+          <button class="reset-btn" id="langBtn" title="Language / اللغة" style="width:auto; padding:0 8px; font-size:11px; font-weight:800;">EN</button>
+          <button class="reset-btn" id="resetBtn" title="Reset">⟲</button>
+        </div>
+      </div>
+      <div class="player-line">
+        <input id="pname" placeholder="Player name / الاسم">
+        <input id="pjob" placeholder="Job / الوظيفة">
+      </div>
+    </div>
+
+    <div class="tabs" id="tabBar">
+      <div class="tab active" data-screen="ledger" data-i18n="tabLedger">Ledger</div>
+      <div class="tab" data-screen="assets" data-i18n="tabAssets">Assets &amp; Debt</div>
+      <div class="tab" data-screen="events" data-i18n="tabEvents">Events</div>
+      <div class="tab" data-screen="safezone" id="safeZoneTab" data-i18n="tabSafeZone">Safe Zone</div>
+      <div class="tab" data-screen="log" data-i18n="tabLog">Log</div>
+    </div>
+
+    <!-- LEDGER SCREEN (Hustle Zone) -->
+    <div class="screen active" id="screen-ledger">
+
+      <div class="gauge-card">
+        <div class="gauge-top">
+          <div>
+            <div class="gauge-label">Monthly Cashflow</div>
+            <div class="gauge-value" id="cashflowVal">0 <small>EGP</small></div>
+          </div>
+        </div>
+        <div class="gauge-bar-track"><div class="gauge-bar-fill" id="gaugeFill" style="width:0%"></div></div>
+        <div class="gauge-sub">
+          <span>Income <b id="incTot">0</b></span>
+          <span>Expenses <b id="expTot">0</b></span>
+        </div>
+      </div>
+
+      <div class="physical-cue" id="lastChangeNote"></div>
+
+      <div class="cash-strip">
+        <div class="cash-box cash">
+          <div class="lbl" data-i18n="cashOnHand">Cash on hand</div>
+          <div class="val" id="cashVal">0</div>
+        </div>
+        <div class="cash-box pending">
+          <div class="lbl" data-i18n="escapeTarget">Escape target</div>
+          <div class="val" id="targetVal">0</div>
+        </div>
+      </div>
+
+      <button class="payday-btn" id="paydayBtn"><span class="dice">🎲</span> <span data-i18n="paydayBtnText">Land on Payday — collect cashflow</span></button>
+      <button class="undo-btn" id="undoBtn">↩️ Undo last collection</button>
+      <div class="physical-cue" id="paydayCue"></div>
+
+      <button class="quick-cash-btn" id="marketDeckBtnLedger" style="background:#1B3A5C; border-color:#1B3A5C; margin-top:8px;">📰 Roll the Market — moves assets, liabilities, income &amp; expenses</button>
+
+      <button class="quick-cash-btn" id="cardCashBtn">🎴 Luck / Hustle card — adjust cash</button>
+
+      <div class="badge-strip" id="diceBonusBadge">
+        🎲🎲 2-dice bonus active from Charity
+        <button id="clearDiceBonus">Passed Charity</button>
+      </div>
+
+      <button class="quick-cash-btn" id="charityBtn" style="background:var(--pink); border-color:var(--pink); margin-top:8px;">🕌 Land on Charity — donate 200 EGP</button>
+
+      <div class="win-banner" id="jumpBanner">
+        <div class="wtitle">🚀 You can escape the Hustle Zone!</div>
+        <div class="wsub">Earnings cover expenses. Jump to the Safe Zone and your earnings ×10.</div>
+        <button class="payday-btn" id="jumpBtn" style="margin-top:10px; box-shadow:none;">Jump to Safe Zone</button>
+      </div>
+
+      <div class="ledger-block">
+        <div class="section-eyebrow" data-i18n="secIncome">Income / الدخل</div>
+        <div class="ledger-row"><label>Salary</label><input type="number" class="inc" data-key="salary" value="4200"></div>
+        <div class="ledger-row"><label>Baraka (marriage boost)</label><input type="number" class="inc" data-key="baraka" value="0"></div>
+        <div class="ledger-row"><label>Other manual income</label><input type="number" class="inc" data-key="biz" value="0"></div>
+        <div class="ledger-total income"><span>Total income</span><span id="incTotal">0</span></div>
+        <p class="empty-note" style="padding:4px 0 0;">Real estate, stocks &amp; startups add themselves here automatically once bought in Events →</p>
+      </div>
+
+      <div class="ledger-block">
+        <div class="section-eyebrow" data-i18n="secExpenses">Expenses / المصاريف</div>
+        <div class="ledger-row"><label>Base expenses</label><input type="number" class="exp" data-key="base" value="2600"></div>
+        <div class="ledger-row"><label>Marriage household</label><input type="number" class="exp" data-key="marriage" value="0"></div>
+        <div class="ledger-row child-row">
+          <label>Children (250 each, max 4)</label>
+          <div class="stepper">
+            <button type="button" id="childMinus">−</button>
+            <span class="step-val" id="childCountVal">0</span>
+            <button type="button" id="childPlus">+</button>
+          </div>
+        </div>
+        <div class="ledger-row"><label>Responsibility bills (recurring)</label><input type="number" class="exp" data-key="responsibility" value="0"></div>
+        <div class="ledger-row"><label>Solfa (loans owed out)</label><input type="number" class="exp" data-key="solfa" value="0"></div>
+        <div class="ledger-row"><label>Debt installments</label><input type="number" class="exp" data-key="debt" value="0"></div>
+        <div class="ledger-row"><label>Gam3ya</label><input type="number" class="exp" data-key="gam3ya" value="0"></div>
+        <div class="ledger-total expense"><span>Total expenses</span><span id="expTotal">0</span></div>
+        <p class="empty-note" style="padding:4px 0 0;">Loan installments from Assets &amp; Debt → Liabilities add themselves here automatically.</p>
+      </div>
+
+      <p class="footnote">The app owns every calculation — cashflow, totals, and the escape-target x10 jump happen automatically. Real bills only come out for the moments below.</p>
+    </div>
+
+    <!-- ASSETS SCREEN -->
+    <div class="screen" id="screen-assets">
+      <div class="section-eyebrow" data-i18n="secHoldings">Tradeable Holdings / أسهم وعملات ومعادن</div>
+      <div id="stockList"></div>
+      <p class="empty-note" id="stockEmpty">No stocks, currency, metals or funds yet — buy from Events →</p>
+
+      <div class="section-eyebrow" style="margin-top:18px;" data-i18n="secStartups">Startups / ستارت اب</div>
+      <div id="startupList"></div>
+      <p class="empty-note" id="startupEmpty">No startups yet</p>
+
+      <div class="section-eyebrow" style="margin-top:18px;" data-i18n="secProperty">Property, Business &amp; Fixed Income</div>
+      <div class="badge-strip" id="reModifierBadge" style="justify-content:flex-start;"></div>
+      <div id="assetList"></div>
+      <p class="empty-note" id="assetEmpty">No assets yet — buy one from Events →</p>
+
+      <div class="section-eyebrow" style="margin-top:18px;" data-i18n="secLiabilities">Liabilities — what you owe</div>
+      <div id="liabList"></div>
+      <p class="empty-note" id="liabEmpty">No debt yet — clean record 🌱</p>
+
+      <div class="section-eyebrow" style="margin-top:18px;" data-i18n="secLoansOut">Loans to Others — what's owed to you</div>
+      <div id="loansOutList"></div>
+      <p class="empty-note" id="loansOutEmpty">You haven't lent anyone money — do it from Events →</p>
+
+      <p class="footnote">If a card ever needs more cash than you have, the app never lets Cash on Hand go negative — it walks you through Bank, Friend, or Gam3ya instead. Each player logs their own side: the debtor under Liabilities, the creditor under Loans to Others.</p>
+    </div>
+
+    <!-- EVENTS SCREEN -->
+    <div class="screen" id="screen-events">
+      <div class="section-eyebrow" data-i18n="secDrawCard">Draw a card, tap the matching action</div>
+      <div class="event-btns">
+        <button class="event-btn big" id="cardCashBtn2" style="background:var(--pink); border-color:var(--pink); color:#fff;">🍀 Luck / Hustle Card</button>
+        <button class="event-btn big" id="marketDeckBtn" style="background:#1B3A5C; border-color:#1B3A5C; color:#fff;">📰 Market Card — draw from the deck</button>
+        <button class="event-btn buy" data-modal="asset">🏠 Buy Real Estate<br><span style="font-weight:500;font-size:10.5px;">Chance card</span></button>
+        <button class="event-btn buy" data-modal="business">🏗️ Start Business<br><span style="font-weight:500;font-size:10.5px;">Active immediately</span></button>
+        <button class="event-btn" id="buyStockBtn" style="border-color:#1B6EA8;color:#1B6EA8;">📈 Buy Stock<br><span style="font-weight:500;font-size:10.5px;">Chance deck — 4 companies</span></button>
+        <button class="event-btn" data-modal="startup" style="border-color:#A0530A;color:#A0530A;">🚀 Buy Startup<br><span style="font-weight:500;font-size:10.5px;">Dormant till activated</span></button>
+        <button class="event-btn" id="fixedIncomeBtn" style="border-color:#0F6B4C;color:#0F6B4C;">📜 Fixed Income<br><span style="font-weight:500;font-size:10.5px;">Certificates &amp; sukuk</span></button>
+        <button class="event-btn" id="metalsBtn" style="border-color:#A0790A;color:#A0790A;">🥇 Precious Metals<br><span style="font-weight:500;font-size:10.5px;">Gold &amp; silver</span></button>
+        <button class="event-btn" id="currencyBtn" style="border-color:#1B6EA8;color:#1B6EA8;">💵 Currency<br><span style="font-weight:500;font-size:10.5px;">USD</span></button>
+        <button class="event-btn" id="landBtn" style="border-color:#8a6408;color:#8a6408;">🗺️ Land<br><span style="font-weight:500;font-size:10.5px;">5 or 20 feddan</span></button>
+        <button class="event-btn" id="fundsBtn" style="border-color:var(--pink);color:var(--pink);">📊 Funds<br><span style="font-weight:500;font-size:10.5px;">REIT, EGX 30, Islamic Fund</span></button>
+        <button class="event-btn fine" id="responsibilityBtn">📄 Pay Responsibility<br><span style="font-weight:500;font-size:10.5px;">One-time or recurring</span></button>
+        <button class="event-btn loan" data-modal="loan">🏦 Take Loan / Solfa<br><span style="font-weight:500;font-size:10.5px;">Bank or player</span></button>
+        <button class="event-btn" id="giveLoanBtn" style="border-color:var(--teal); color:var(--teal);">💰 Give a Loan<br><span style="font-weight:500;font-size:10.5px;">You're the creditor</span></button>
+        <button class="event-btn big" id="marriageBtn">💍 Get Married — apply Marriage card</button>
+        <button class="event-btn big" id="bankruptBtn" style="background:var(--red); border-color:var(--red); color:#fff;">⚠️ Declare Bankruptcy — creditor payout</button>
+      </div>
+
+      <div class="physical-cue show" style="margin-top:16px;">
+        <b>Why some steps stay physical:</b> asset purchases, fines, loans-from-players, and bankruptcy still involve handing over real bills across the table. The app just pre-calculates the exact number and never lets Cash on Hand go negative.
+        <div class="bill-row">
+          <span class="bill">100</span><span class="bill">50</span><span class="bill">20</span><span class="bill">10</span><span class="bill">5</span><span class="bill">1</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SAFE ZONE SCREEN -->
+    <div class="screen" id="screen-safezone">
+      <div class="gauge-card">
+        <div class="gauge-top">
+          <div>
+            <div class="gauge-label">Monthly Earnings</div>
+            <div class="gauge-value" id="szEarningsVal">0 <small>EGP</small></div>
+          </div>
+        </div>
+        <div class="gauge-bar-track"><div class="gauge-bar-fill" id="szGaugeFill" style="width:0%"></div></div>
+        <div class="gauge-sub">
+          <span>Target <b>250,000</b></span>
+          <span id="szPctLabel">0%</span>
+        </div>
+      </div>
+
+      <div class="cash-strip">
+        <div class="cash-box cash">
+          <div class="lbl" data-i18n="cashOnHand2">Cash on hand</div>
+          <div class="val" id="szCashVal">0</div>
+        </div>
+        <div class="cash-box pending">
+          <div class="lbl" id="szDreamLbl">Dream target</div>
+          <div class="val" id="szDreamVal">—</div>
+        </div>
+      </div>
+
+      <button class="payday-btn" id="szPaydayBtn"><span class="dice">🎲</span> <span data-i18n="szPaydayBtnText">Land on Payment — collect earnings</span></button>
+      <button class="undo-btn" id="szUndoBtn">↩️ Undo last collection</button>
+
+      <div class="badge-strip" id="zakatBonusBadge">
+        🎲🎲🎲 3-dice bonus active from Zakat
+        <button id="clearZakatBonus">Passed Zakat</button>
+      </div>
+
+      <div class="win-banner" id="szWinBanner">
+        <div class="wtitle" id="szWinTitle">🏆 You won Felosy!</div>
+        <div class="wsub" id="szWinSub"></div>
+      </div>
+
+      <div class="section-eyebrow" style="margin-top:16px;" data-i18n="secSafeEvents">Safe Zone Events</div>
+      <div class="event-btns">
+        <button class="event-btn buy" id="szInvestBtn">📊 Investment<br><span style="font-weight:500;font-size:10.5px;">Pay cash or risk the dice</span></button>
+        <button class="event-btn" id="szDreamBtn" style="border-color:var(--pink); color:var(--pink);">🏝️ Dream Card<br><span style="font-weight:500;font-size:10.5px;">Set target &amp; buy it</span></button>
+        <button class="event-btn" id="szDonateBtn" style="border-color:#8a6408; color:#8a6408;">🕌 Donate 50,000<br><span style="font-weight:500;font-size:10.5px;">Doubles your earnings</span></button>
+        <button class="event-btn" id="szZakatBtn" style="border-color:var(--teal); color:var(--teal);">🤲 Zakat<br><span style="font-weight:500;font-size:10.5px;">2.5% of cash</span></button>
+        <button class="event-btn fine" id="szRobberyBtn">🥷 Robbery<br><span style="font-weight:500;font-size:10.5px;">Lose 100% of cash</span></button>
+        <button class="event-btn fine" id="szBustedBtn">🚨 Busted<br><span style="font-weight:500;font-size:10.5px;">Lose 50% + skip a turn</span></button>
+        <button class="event-btn fine" id="szEvilEyeBtn">🧿 Evil Eye<br><span style="font-weight:500;font-size:10.5px;">Skip next 2 turns</span></button>
+      </div>
+
+      <p class="footnote">Win by reaching 250,000 EGP in monthly Earnings, or by saving enough Cash to buy your Dream outright.</p>
+    </div>
+
+    <!-- LOG SCREEN -->
+    <div class="screen" id="screen-log">
+      <div class="turn-card">
+        <div>
+          <div class="tlabel">Current Turn</div>
+          <div class="tval" id="turnVal">1</div>
+        </div>
+        <div class="turn-btns">
+          <button class="minus" id="turnMinus">−</button>
+          <button id="turnPlus">+</button>
+        </div>
+      </div>
+      <p class="empty-note" style="padding:6px 0 0;">Tap + after each of your turns so every logged action lines up with the right number.</p>
+
+      <div class="section-eyebrow" style="margin-top:18px;" data-i18n="secLog">What happened / السجل</div>
+      <div id="logList"></div>
+      <p class="empty-note" id="logEmpty">No actions logged yet — everything you do shows up here with the turn it happened on.</p>
+      <p class="footnote">Tap ✕ on any line to delete a wrongly-logged entry — that only edits the record, it doesn't touch cash or assets. To actually reverse a payment, use Undo on the Payday screen (last collection only) or fix the numbers directly in Ledger / Assets &amp; Debt.</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modalBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+function freshState(){
+  return {
+    income: { salary:4200, baraka:0, biz:0 },
+    expense:{ base:2600, marriage:0, children:0, responsibility:0, solfa:0, debt:0, gam3ya:0 },
+    cash: 3000,
+    assets: [],
+    stocks: [],
+    startups: [],
+    liabilities: [],
+    loansOut: [],
+    diceBonus: false,
+    childCount: 0,
+    escapeTargetOverride: null,
+    reSaleModifier: 0,   // temporary +/- added to the next Real Estate sale (from a Market card)
+    reBuyExtra: 0,       // temporary extra cost added to the next Real Estate purchase
+    turn: 1,
+    log: [],
+    safeZone: {
+      earnings: 0,
+      cash: 0,
+      dreamName: '',
+      dreamCost: 0,
+      donateCount: 0,
+      debtDrag: 0,
+      zakatBonus: false,
+      skipTurns: 0,
+      won: false
+    }
+  };
+}
+let state = freshState();
+let mode = null; // 'hustle' | 'safe' | 'traditional'
+let lang = 'en';
+
+const I18N = {
+  chooseMode: {en:'Choose how you want to play', ar:'اختر طريقة اللعب'},
+  modeHustleTitle: {en:'Hustle Zone Only', ar:'دائرة السعي فقط'},
+  modeHustleDesc: {en:'Just the survival phase — job, expenses, side hustles, escaping the rat race. No Safe Zone.', ar:'مرحلة السعي فقط — وظيفة، مصاريف، أعمال جانبية، والهروب من السباق. بدون دائرة الأمان.'},
+  modeSafeTitle: {en:'Safe Zone Only', ar:'دائرة الأمان فقط'},
+  modeSafeDesc: {en:'Jump straight to empire-building — investments, Dream card, donations, Zakat. Start with a purple-sheet income.', ar:'ابدأ مباشرة ببناء الإمبراطورية — استثمارات، بطاقة الحلم، تبرعات، زكاة.'},
+  modeTradTitle: {en:'Traditional', ar:'الوضع التقليدي'},
+  modeTradDesc: {en:'Play it as designed: survive the Hustle Zone, then jump (Earnings ×10) into the Safe Zone once you escape.', ar:'العب كما صُمّمت اللعبة: اجتز دائرة السعي، ثم انتقل (الأرباح ×10) إلى دائرة الأمان.'},
+  playerName: {en:'Player name', ar:'اسم اللاعب'},
+  jobLabel: {en:'Job / الوظيفة', ar:'الوظيفة'},
+  startSalary: {en:'Starting Salary', ar:'المرتب المبدئي'},
+  startExpenses: {en:'Starting Expenses', ar:'المصاريف المبدئية'},
+  cashInHand: {en:'Cash in Hand', ar:'الفلوس في اليد'},
+  cashInHand2: {en:'Cash in Hand', ar:'الفلوس في اليد'},
+  startEarnings: {en:'Starting Monthly Earnings', ar:'الأرباح الشهرية المبدئية'},
+  cashflowPreview: {en:'Cashflow preview', ar:'معاينة كاش فلو'},
+  tabLedger: {en:'Ledger', ar:'الدفتر'},
+  tabAssets: {en:'Assets & Debt', ar:'الأصول والديون'},
+  tabEvents: {en:'Events', ar:'الأحداث'},
+  tabSafeZone: {en:'Safe Zone', ar:'دائرة الأمان'},
+  tabLog: {en:'Log', ar:'السجل'},
+  secIncome: {en:'Income / الدخل', ar:'الدخل'},
+  secExpenses: {en:'Expenses / المصاريف', ar:'المصاريف'},
+  secHoldings: {en:'Tradeable Holdings / أسهم وعملات ومعادن', ar:'أسهم وعملات ومعادن'},
+  secStartups: {en:'Startups / ستارت اب', ar:'ستارت اب'},
+  secProperty: {en:'Property, Business & Fixed Income', ar:'عقارات وأعمال ودخل ثابت'},
+  secLiabilities: {en:'Liabilities — what you owe', ar:'الالتزامات — اللي عليك'},
+  secLoansOut: {en:"Loans to Others — what's owed to you", ar:'سلف قدمتها — اللي ليك'},
+  secDrawCard: {en:'Draw a card, tap the matching action', ar:'اسحب كارت واضغط الإجراء المناسب'},
+  secSafeEvents: {en:'Safe Zone Events', ar:'أحداث دائرة الأمان'},
+  secLog: {en:'What happened / السجل', ar:'اللي حصل'},
+  cashOnHand: {en:'Cash on hand', ar:'الفلوس في اليد'},
+  cashOnHand2: {en:'Cash on hand', ar:'الفلوس في اليد'},
+  escapeTarget: {en:'Escape target', ar:'هدف الهروب'},
+  paydayBtnText: {en:'Land on Payday — collect cashflow', ar:'وقفت على القبض — اقبض الكاش فلو'},
+  szPaydayBtnText: {en:'Land on Payment — collect earnings', ar:'وقفت على القبض — اقبض الأرباح'},
+};
+
+function setLanguage(l){
+  lang = l;
+  document.documentElement.dir = (l==='ar') ? 'rtl' : 'ltr';
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.dataset.i18n;
+    if(I18N[key]) el.textContent = I18N[key][l] || I18N[key].en;
+  });
+  $('#langBtn').textContent = (l==='ar') ? 'AR' : 'EN';
+}
+document.getElementById('langBtn').addEventListener('click', ()=>{
+  setLanguage(lang==='en' ? 'ar' : 'en');
+  toast(lang==='ar' ? 'تم التحويل للعربية' : 'Switched to English');
+});
+
+const $ = sel => document.querySelector(sel);
+const fmt = n => Math.round(n).toLocaleString('en-US');
+
+function totals(){
+  let inc = Object.values(state.income).reduce((a,b)=>a+Number(b||0),0);
+  let exp = Object.values(state.expense).reduce((a,b)=>a+Number(b||0),0);
+  exp += state.liabilities.reduce((a,l)=>a+Number(l.installment||0),0);
+  inc += state.assets.reduce((a,x)=>a+Number(x.income||0),0);
+  inc += state.stocks.reduce((a,x)=>a+Number(x.dividend||0),0);
+  inc += state.startups.filter(s=>s.active).reduce((a,x)=>a+Number(x.monthlyIncome||0),0);
+  inc += state.loansOut.reduce((a,x)=>a+Number(x.installment||0),0);
+  return {inc, exp, flow: inc-exp};
+}
+
+/* ================= CASH GUARD =================
+   Cash on hand can never go negative. `zone` is 'hustle' or 'safe' —
+   it decides which cash pool is checked/deducted and how a loan installment bites. */
+function getCash(zone){ return zone==='safe' ? state.safeZone.cash : state.cash; }
+function setCash(zone, val){ if(zone==='safe') state.safeZone.cash = Math.max(0,val); else state.cash = Math.max(0,val); }
+
+function attemptSpend(amount, label, onSuccess, zone){
+  zone = zone || 'hustle';
+  amount = Math.round(Number(amount)||0);
+  if(amount <= 0){ onSuccess(); render(); return; }
+  const cash = getCash(zone);
+  if(amount <= cash){
+    setCash(zone, cash - amount);
+    onSuccess();
+    render();
+    return;
+  }
+  openInsufficientModal(amount, label, onSuccess, zone);
+}
+
+function openInsufficientModal(amount, label, onSuccess, zone){
+  const cash = getCash(zone);
+  const shortfall = amount - cash;
+  const body = $('#modalBody');
+  body.innerHTML = `
+    <h3>⚠️ Cash isn't enough</h3>
+    <p class="desc">${label} needs <b>${fmt(amount)} EGP</b>, you only have <b>${fmt(cash)} EGP</b> — short by <b style="color:var(--red)">${fmt(shortfall)} EGP</b>. Cash on hand can't go negative, so cover it one of three ways:</p>
+    <div class="modal-actions" style="flex-direction:column; gap:8px;">
+      <button class="confirm" id="oBank" style="background:var(--gold); color:var(--ink);">🏦 Borrow from the Bank</button>
+      <button class="confirm" id="oFriend" style="background:var(--teal); color:#fff;">🤝 Borrow from a Friend</button>
+      <button class="confirm" id="oGam3ya" style="background:var(--pink); color:#fff;">🪙 Start / Draw from a Gam3ya</button>
+    </div>
+    <div class="modal-actions"><button class="cancel" id="modalCancel" style="flex:1;">Cancel this payment</button></div>
+  `;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = closeModal;
+
+  $('#oBank').onclick = ()=>{
+    body.innerHTML = `
+      <h3>🏦 Bank Loan</h3>
+      <p class="desc">Lump sum lands in Cash on Hand now. Installment reduces future income every payday. You can repay the full principal any time from Assets &amp; Debt.</p>
+      <div class="modal-field"><label>Lump sum to borrow</label><input id="mf_lump" type="number" value="${shortfall}"></div>
+      <div class="modal-field"><label>Installment / month</label><input id="mf_inst" type="number" placeholder="${Math.max(200, Math.round(shortfall*0.15))}"></div>
+      <div class="modal-actions">
+        <button class="cancel" id="modalCancel">Cancel</button>
+        <button class="confirm" id="modalConfirm">Borrow &amp; continue</button>
+      </div>`;
+    $('#modalCancel').onclick = closeModal;
+    $('#modalConfirm').onclick = ()=>{
+      const lump = Number($('#mf_lump').value||0);
+      const inst = Number($('#mf_inst').value||0);
+      setCash(zone, getCash(zone) + lump);
+      if(zone==='safe'){ state.safeZone.debtDrag += inst; }
+      else { state.liabilities.push({name:'Bank loan', principal:lump, installment:inst, from:'Bank'}); }
+      toast(`Bank lent ${fmt(lump)} EGP in bills · +${fmt(inst)}/mo installment`);
+      closeModal();
+      attemptSpend(amount, label, onSuccess, zone);
+    };
+  };
+
+  $('#oFriend').onclick = ()=>{
+    body.innerHTML = `
+      <h3>🤝 Borrow from a Friend</h3>
+      <p class="desc">Negotiate the total and the repayment per payday. Tell them to log this as "Give a Loan" on their own device.</p>
+      <div class="modal-field"><label>Friend's name</label><input id="mf_name" type="text" placeholder="Ahmed"></div>
+      <div class="modal-field"><label>Lump sum received</label><input id="mf_lump" type="number" value="${shortfall}"></div>
+      <div class="modal-field"><label>Installment / month you'll repay</label><input id="mf_inst" type="number" placeholder="${Math.max(100, Math.round(shortfall*0.2))}"></div>
+      <div class="modal-actions">
+        <button class="cancel" id="modalCancel">Cancel</button>
+        <button class="confirm" id="modalConfirm">Borrow &amp; continue</button>
+      </div>`;
+    $('#modalCancel').onclick = closeModal;
+    $('#modalConfirm').onclick = ()=>{
+      const name = $('#mf_name').value || 'Friend';
+      const lump = Number($('#mf_lump').value||0);
+      const inst = Number($('#mf_inst').value||0);
+      setCash(zone, getCash(zone) + lump);
+      if(zone==='safe'){ state.safeZone.debtDrag += inst; }
+      else { state.liabilities.push({name:`${name} (friend loan)`, principal:lump, installment:inst, from:name}); }
+      toast(`${name} lent you ${fmt(lump)} EGP in bills · +${fmt(inst)}/mo installment`);
+      closeModal();
+      attemptSpend(amount, label, onSuccess, zone);
+    };
+  };
+
+  $('#oGam3ya').onclick = ()=>{
+    body.innerHTML = `
+      <h3>🪙 Gam3ya (Savings Circle)</h3>
+      <p class="desc">You draw your turn's payout now in cash. Going forward you owe a recurring contribution every payday.</p>
+      <div class="modal-field"><label>Payout you draw today</label><input id="mf_payout" type="number" value="${shortfall}"></div>
+      <div class="modal-field"><label>Recurring contribution / month</label><input id="mf_contrib" type="number" placeholder="${Math.max(100, Math.round(shortfall*0.12))}"></div>
+      <div class="modal-actions">
+        <button class="cancel" id="modalCancel">Cancel</button>
+        <button class="confirm" id="modalConfirm">Draw &amp; continue</button>
+      </div>`;
+    $('#modalCancel').onclick = closeModal;
+    $('#modalConfirm').onclick = ()=>{
+      const payout = Number($('#mf_payout').value||0);
+      const contrib = Number($('#mf_contrib').value||0);
+      setCash(zone, getCash(zone) + payout);
+      if(zone==='safe'){ state.safeZone.debtDrag += contrib; }
+      else { state.expense.gam3ya = Number(state.expense.gam3ya||0) + contrib; }
+      toast(`Gam3ya payout ${fmt(payout)} EGP in bills · +${fmt(contrib)}/mo contribution`);
+      closeModal();
+      attemptSpend(amount, label, onSuccess, zone);
+    };
+  };
+}
+
+/* ================= RENDER ================= */
+function render(){
+  renderLog();
+  syncLedgerInputs();
+  const {inc, exp, flow} = totals();
+  $('#incTot').textContent = fmt(inc);
+  $('#expTot').textContent = fmt(exp);
+  $('#incTotal').textContent = fmt(inc);
+  $('#expTotal').textContent = fmt(exp);
+  $('#cashflowVal').innerHTML = (flow>=0? fmt(flow) : '-'+fmt(Math.abs(flow))) + ' <small>EGP</small>';
+  $('#cashflowVal').style.color = flow>=0 ? 'var(--papyrus)' : '#ff9d92';
+  const pct = Math.max(4, Math.min(100, (flow/(exp||1))*40 + 40));
+  $('#gaugeFill').style.width = pct+'%';
+  $('#cashVal').textContent = fmt(state.cash);
+  const target = state.escapeTargetOverride != null ? state.escapeTargetOverride : exp;
+  $('#targetVal').textContent = fmt(target);
+  $('#jumpBanner').classList.toggle('show', inc >= target && target > 0 && mode==='traditional');
+
+  const lastNote = $('#lastChangeNote');
+  if(lastNote){
+    if(state.log.length){
+      lastNote.innerHTML = `<b>Last change:</b> ${state.log[0].text}`;
+      lastNote.classList.add('show');
+    } else {
+      lastNote.classList.remove('show');
+    }
+  }
+
+  // assets (real estate / other income-producing property)
+  const aList = $('#assetList'); aList.innerHTML='';
+  state.assets.forEach((a,i)=>{
+    aList.insertAdjacentHTML('beforeend', `
+      <div class="item-card">
+        <div class="top-row">
+          <div><span class="asset-tag income">${a.type}</span><div class="name">${a.name}</div><div class="meta">bought at ${fmt(a.cost||0)} · adds ${fmt(a.income)}/mo income</div></div>
+          <div style="display:flex;align-items:center;">
+            <span class="amt pos">+${fmt(a.income)}</span>
+            <button class="del-x" onclick="removeAsset(${i})">✕</button>
+          </div>
+        </div>
+        <div class="mini-btns">
+          <button class="mini-btn sell" onclick="sellAsset(${i})">${a.type==='Fixed Income' ? '💵 Redeem early' : '🤝 Sell to a buyer'}</button>
+        </div>
+      </div>`);
+  });
+  $('#assetEmpty').style.display = state.assets.length? 'none':'block';
+
+  // stocks
+  const sList = $('#stockList'); sList.innerHTML='';
+  state.stocks.forEach((s,i)=>{
+    const value = s.qty * s.currentPrice;
+    const cost = s.qty * s.buyPrice;
+    const gain = value - cost;
+    const gpct = cost? ((gain/cost)*100).toFixed(1) : '0.0';
+    const cat = s.category || 'Stock';
+    sList.insertAdjacentHTML('beforeend', `
+      <div class="stock-card">
+        <div class="stock-top">
+          <div>
+            <span class="asset-tag stock">${cat}</span><b>${s.name}</b>
+            <div class="stock-meta">${s.qty} units · bought @ ${fmt(s.buyPrice)}${s.dividend?' · dividend '+fmt(s.dividend)+'/mo':''}${s.minPrice!=null?' · range '+fmt(s.minPrice)+'–'+fmt(s.maxPrice):''}</div>
+          </div>
+          <button class="del-x" onclick="removeStock(${i})">✕</button>
+        </div>
+        <div class="stock-price-row">
+          <span class="stock-price">${fmt(s.currentPrice)} EGP</span>
+          <span class="stock-change ${gain>=0?'up':'down'}">${gain>=0?'▲':'▼'} ${gain>=0?'+':''}${fmt(gain)} (${gpct}%)</span>
+        </div>
+        <div class="mini-btns">
+          <button class="mini-btn roll" onclick="rollStock(${i})">🎲 Market move</button>
+          <button class="mini-btn" onclick="editStockPrice(${i})">✎ Set price</button>
+          <button class="mini-btn sell" onclick="sellStock(${i})">Sell all</button>
+        </div>
+      </div>`);
+  });
+  $('#stockEmpty').style.display = state.stocks.length? 'none':'block';
+
+  // startups
+  const stList = $('#startupList'); stList.innerHTML='';
+  state.startups.forEach((s,i)=>{
+    stList.insertAdjacentHTML('beforeend', `
+      <div class="stock-card">
+        <div class="stock-top">
+          <div>
+            <span class="asset-tag ${s.active?'startup':'dormant'}">${s.active?'Active':'Dormant'}</span><b>${s.name}</b>
+            <div class="stock-meta">Cost paid ${fmt(s.cost)} · ${s.active? 'adds '+fmt(s.monthlyIncome)+'/mo now' : 'will add '+fmt(s.monthlyIncome)+'/mo once activated'}</div>
+          </div>
+          <button class="del-x" onclick="removeStartup(${i})">✕</button>
+        </div>
+        <div class="mini-btns">
+          ${s.active ? '' : `<button class="mini-btn activate" onclick="activateStartup(${i})">⚡ Activate (Market card)</button>`}
+        </div>
+      </div>`);
+  });
+  $('#startupEmpty').style.display = state.startups.length? 'none':'block';
+
+  const lList = $('#liabList'); lList.innerHTML='';
+  state.liabilities.forEach((l,i)=>{
+    lList.insertAdjacentHTML('beforeend', `
+      <div class="item-card">
+        <div class="top-row">
+          <div><div class="name">${l.name}</div><div class="meta">${l.principal? 'Borrowed '+fmt(l.principal)+' EGP · ':''}${fmt(l.installment)}/mo installment</div></div>
+          <div style="display:flex;align-items:center;">
+            <span class="amt neg">-${fmt(l.installment)}</span>
+            <button class="del-x" onclick="removeLiability(${i})" title="Remove without paying (correction)">✕</button>
+          </div>
+        </div>
+        ${l.principal ? `<div class="mini-btns"><button class="mini-btn sell" onclick="repayLiabilityFull(${i})">💳 Repay ${fmt(l.principal)} EGP in full</button></div>` : ''}
+      </div>`);
+  });
+  $('#liabEmpty').style.display = state.liabilities.length? 'none':'block';
+
+  const loList = $('#loansOutList'); loList.innerHTML='';
+  state.loansOut.forEach((l,i)=>{
+    loList.insertAdjacentHTML('beforeend', `
+      <div class="item-card">
+        <div><div class="name">${l.name}</div><div class="meta">lent ${fmt(l.lump)} · collects ${fmt(l.installment)}/mo</div></div>
+        <div style="display:flex;align-items:center;">
+          <span class="amt pos">+${fmt(l.installment)}</span>
+          <button class="del-x" onclick="removeLoanOut(${i})">✕</button>
+        </div>
+      </div>`);
+  });
+  $('#loansOutEmpty').style.display = state.loansOut.length? 'none':'block';
+
+  const dBadge = $('#diceBonusBadge');
+  dBadge.classList.toggle('show', state.diceBonus);
+
+  const reBadge = $('#reModifierBadge');
+  if(reBadge){
+    const notes = [];
+    if(state.reSaleModifier) notes.push(`Next RE sale ${state.reSaleModifier>0?'+':''}${fmt(state.reSaleModifier)} EGP`);
+    if(state.reBuyExtra) notes.push(`Next RE buy +${fmt(state.reBuyExtra)} EGP surcharge`);
+    if(notes.length){ reBadge.textContent = '📰 ' + notes.join(' · '); reBadge.classList.add('show'); }
+    else reBadge.classList.remove('show');
+  }
+
+  $('#childCountVal').textContent = state.childCount;
+  $('#childPlus').disabled = state.childCount >= 4;
+  $('#childMinus').disabled = state.childCount <= 0;
+
+  renderSafeZone();
+}
+
+function renderSafeZone(){
+  const sz = state.safeZone;
+  $('#szEarningsVal').innerHTML = fmt(sz.earnings) + ' <small>EGP</small>';
+  const pct = Math.min(100, (sz.earnings/250000)*100);
+  $('#szGaugeFill').style.width = pct+'%';
+  $('#szPctLabel').textContent = pct.toFixed(1)+'%';
+  $('#szCashVal').textContent = fmt(sz.cash);
+  if(sz.dreamCost>0){
+    $('#szDreamLbl').textContent = sz.dreamName || 'Dream target';
+    $('#szDreamVal').textContent = fmt(sz.dreamCost);
+  } else {
+    $('#szDreamLbl').textContent = 'Dream target';
+    $('#szDreamVal').textContent = '—';
+  }
+  $('#zakatBonusBadge').classList.toggle('show', sz.zakatBonus);
+
+  const winByEarnings = sz.earnings >= 250000;
+  const winByDream = sz.dreamCost>0 && sz.cash >= sz.dreamCost;
+  const banner = $('#szWinBanner');
+  if(winByEarnings || winByDream){
+    banner.classList.add('show');
+    if(winByEarnings){
+      $('#szWinTitle').textContent = '🏆 Cashflow Empire achieved!';
+      $('#szWinSub').textContent = `Earnings hit ${fmt(sz.earnings)} EGP/mo — you win Felosy.`;
+    } else {
+      $('#szWinTitle').textContent = '🏆 Ready to buy your Dream!';
+      $('#szWinSub').textContent = `You've saved ${fmt(sz.cash)} EGP — enough for "${sz.dreamName}". Buy it to win.`;
+    }
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+/* ================= HUSTLE ZONE INPUTS ================= */
+document.querySelectorAll('.inc').forEach(el=>el.addEventListener('input', e=>{
+  state.income[e.target.dataset.key] = e.target.value; render();
+}));
+document.querySelectorAll('.exp').forEach(el=>el.addEventListener('input', e=>{
+  state.expense[e.target.dataset.key] = e.target.value; render();
+}));
+
+$('#childPlus').addEventListener('click', ()=>{
+  if(state.childCount >= 4){ toast('Maximum 4 children reached'); return; }
+  state.childCount++;
+  state.expense.children = state.childCount * 250;
+  render();
+  toast(`Child #${state.childCount} born · +250 EGP/mo added to Ledger`);
+});
+$('#childMinus').addEventListener('click', ()=>{
+  if(state.childCount <= 0) return;
+  state.childCount--;
+  state.expense.children = state.childCount * 250;
+  render();
+  toast(`Removed a child (record correction) · Expenses adjusted`);
+});
+
+/* ================= TABS ================= */
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click', ()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  $('#screen-'+t.dataset.screen).classList.add('active');
+}));
+
+let logSeq = 0;
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(window._tt); window._tt = setTimeout(()=>t.classList.remove('show'), 2400);
+  state.log.unshift({id: ++logSeq, turn: state.turn, text: msg});
+  renderLog();
+}
+function renderLog(){
+  $('#turnVal').textContent = state.turn;
+  const list = $('#logList'); if(!list) return;
+  list.innerHTML = '';
+  state.log.slice(0,80).forEach(entry=>{
+    list.insertAdjacentHTML('beforeend', `
+      <div class="log-item">
+        <span class="lturn">T${entry.turn}</span>
+        <span class="ltext">${entry.text}</span>
+        <button class="log-del" onclick="removeLogEntry(${entry.id})" title="Delete this entry">✕</button>
+      </div>`);
+  });
+  const empty = $('#logEmpty'); if(empty) empty.style.display = state.log.length? 'none':'block';
+}
+function removeLogEntry(id){
+  state.log = state.log.filter(e=>e.id!==id);
+  renderLog();
+}
+window.removeLogEntry = removeLogEntry;
+$('#turnPlus').addEventListener('click', ()=>{ state.turn++; renderLog(); toast(`— Turn ${state.turn} —`); });
+$('#turnMinus').addEventListener('click', ()=>{ if(state.turn>1) state.turn--; renderLog(); });
+
+function closeModal(){ $('#modalBackdrop').classList.remove('show'); }
+$('#modalBackdrop').addEventListener('click', e=>{ if(e.target.id==='modalBackdrop') closeModal(); });
+
+/* ================= UNDO last collection ================= */
+let undoSnap = null;
+function snapshotForUndo(){
+  undoSnap = {
+    cash: state.cash,
+    safeCash: state.safeZone.cash,
+    liabLen: state.liabilities.length,
+    expense: JSON.stringify(state.expense),
+    debtDrag: state.safeZone.debtDrag
+  };
+  $('#undoBtn').classList.add('show');
+  $('#szUndoBtn').classList.add('show');
+}
+function undoCollection(){
+  if(!undoSnap){ toast('Nothing to undo'); return; }
+  state.cash = undoSnap.cash;
+  state.safeZone.cash = undoSnap.safeCash;
+  state.liabilities = state.liabilities.slice(0, undoSnap.liabLen);
+  state.expense = JSON.parse(undoSnap.expense);
+  state.safeZone.debtDrag = undoSnap.debtDrag;
+  undoSnap = null;
+  $('#undoBtn').classList.remove('show');
+  $('#szUndoBtn').classList.remove('show');
+  render();
+  toast('↩️ Undid last collection');
+}
+$('#undoBtn').addEventListener('click', undoCollection);
+$('#szUndoBtn').addEventListener('click', undoCollection);
+
+/* ================= PAYDAY (Hustle) ================= */
+$('#paydayBtn').addEventListener('click', ()=>{
+  const {flow} = totals();
+  const cue = $('#paydayCue');
+  snapshotForUndo();
+  if(flow>=0){
+    state.cash += flow;
+    render();
+    cue.innerHTML = `Digitally added <b style="color:var(--teal)">+${fmt(flow)} EGP</b> to Cash on Hand. Nothing to count out loud — the app did the subtraction for you.`;
+    cue.classList.add('show');
+    toast(`Payday: +${fmt(flow)} EGP collected`);
+  } else {
+    attemptSpend(Math.abs(flow), 'Negative cashflow on Payday', ()=>{
+      cue.innerHTML = `Negative cashflow of ${fmt(Math.abs(flow))} EGP was covered. Cash on hand updated.`;
+      cue.classList.add('show');
+      toast(`Payday: -${fmt(Math.abs(flow))} EGP shortfall covered`);
+    });
+  }
+});
+
+/* ================= GENERIC MODALS ================= */
+const modalDefs = {
+  asset: {
+    title:'Buy Real Estate', desc:'Chance card — pay physical cash now, rental income updates automatically. Sellable to a buyer any time from the Assets tab.',
+    fields:[['name','Property name','e.g. Nasr City flat','text'],['cost','Purchase cost (physical bills)','2000'],['income','Monthly rental income','300']],
+    confirm:(v)=>{
+      const name = v.name||'Property', income = Number(v.income||0);
+      const surcharge = state.reBuyExtra||0;
+      const cost = Number(v.cost||0) + surcharge;
+      attemptSpend(cost, `Buying "${name}"${surcharge?` (incl. ${fmt(surcharge)} EGP Market surcharge)`:''}`, ()=>{
+        state.assets.push({name, type:'Real Estate', income, cost});
+        if(surcharge) state.reBuyExtra = 0;
+        toast(`Paid ${fmt(cost)} EGP in bills${surcharge?` (includes +${fmt(surcharge)} EGP Market surcharge, now consumed)`:''} · +${fmt(income)}/mo rental added to Ledger`);
+        closeModal();
+      });
+    }
+  },
+  business: {
+    title:'Start a Business', desc:'Chance card — pay cash now, earnings start counting immediately (no dormant period, unlike a Startup).',
+    fields:[['name','Business name','e.g. Foul cart','text'],['cost','Cost (physical bills)','3000'],['earnings','Monthly earnings','400']],
+    confirm:(v)=>{
+      const name = v.name||'Business', earnings = Number(v.earnings||0), cost = Number(v.cost||0);
+      attemptSpend(cost, `Starting "${name}"`, ()=>{
+        state.assets.push({name, type:'Business', income:earnings, cost});
+        toast(`Paid ${fmt(cost)} EGP in bills · +${fmt(earnings)}/mo added to Ledger right away`);
+        closeModal();
+      });
+    }
+  },
+  startup: {
+    title:'Buy Startup', desc:'Chance card — pay cash now, but it stays dormant and adds nothing until a Market card activates it.',
+    fields:[['name','Startup name','e.g. Delivery app','text'],['cost','Investment cost (physical bills)','5000'],['monthlyIncome','Income once activated','600']],
+    confirm:(v)=>{
+      const name = v.name||'Startup', cost = Number(v.cost||0), monthlyIncome = Number(v.monthlyIncome||0);
+      attemptSpend(cost, `Investing in "${name}"`, ()=>{
+        state.startups.push({name, cost, monthlyIncome, active:false});
+        toast(`Invested ${fmt(cost)} EGP in bills · dormant until a Market card activates it`);
+        closeModal();
+      });
+    }
+  },
+  loan: {
+    title:'Take Loan / Solfa', desc:'Bank or player loan — lump sum in bills now, recurring installment added to Ledger. Repay the full principal any time from Assets &amp; Debt.',
+    fields:[['lump','Lump sum received','10000'],['installment','Installment / month','1500'],['from','From (Bank or player name)','Bank','text']],
+    confirm:(v)=>{
+      const lump = Number(v.lump||0), inst = Number(v.installment||0), from = v.from||'Bank';
+      state.cash += lump;
+      state.liabilities.push({name:`${from} loan`, principal:lump, installment:inst, from});
+      render();
+      toast(`Received ${fmt(lump)} EGP in bills · +${fmt(inst)}/mo expense added`);
+      closeModal();
+    }
+  }
+};
+
+document.querySelectorAll('[data-modal]').forEach(btn=>{
+  btn.addEventListener('click', ()=> openModal(btn.dataset.modal));
+});
+
+function openModal(key){
+  const def = modalDefs[key];
+  const body = $('#modalBody');
+  body.innerHTML = `
+    <h3>${def.title}</h3>
+    <p class="desc">${def.desc}</p>
+    ${def.fields.map(f=>`
+      <div class="modal-field">
+        <label>${f[1]}</label>
+        <input id="mf_${f[0]}" type="${f[3]||'number'}" placeholder="${f[2]}">
+      </div>`).join('')}
+    <div class="modal-actions">
+      <button class="cancel" id="modalCancel">Cancel</button>
+      <button class="confirm" id="modalConfirm">Confirm</button>
+    </div>
+  `;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = closeModal;
+  $('#modalConfirm').onclick = ()=>{
+    const vals = {};
+    def.fields.forEach(f=> vals[f[0]] = $('#mf_'+f[0]).value);
+    def.confirm(vals);
+  };
+}
+
+/* ================= RESPONSIBILITY: one-time or recurring ================= */
+function openResponsibilityModal(){
+  const body = $('#modalBody');
+  body.innerHTML = `
+    <h3>📄 Responsibility Card</h3>
+    <p class="desc">Is this a one-off bill (repair, fine) or a recurring one (subscription, new bill)?</p>
+    <div class="modal-actions">
+      <button class="confirm" id="rOnce" style="background:var(--red); color:#fff;">One-time payment</button>
+      <button class="confirm" id="rRecur" style="background:var(--gold); color:var(--ink);">Recurring bill</button>
+    </div>
+    <div class="modal-actions"><button class="cancel" id="modalCancel" style="flex:1;">Cancel</button></div>
+  `;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = closeModal;
+
+  $('#rOnce').onclick = ()=>{
+    body.innerHTML = `
+      <h3>One-time payment</h3>
+      <div class="modal-field"><label>Amount due (physical bills)</label><input id="mf_amt" type="number" placeholder="450"></div>
+      <div class="modal-actions">
+        <button class="cancel" id="modalCancel">Cancel</button>
+        <button class="confirm" id="modalConfirm">Pay now</button>
+      </div>`;
+    $('#modalCancel').onclick = closeModal;
+    $('#modalConfirm').onclick = ()=>{
+      const amt = Number($('#mf_amt').value||0);
+      attemptSpend(amt, 'Responsibility card', ()=>{
+        toast(`Handed over ${fmt(amt)} EGP · one-time, no change to Expenses`);
+        closeModal();
+      });
+    };
+  };
+
+  $('#rRecur').onclick = ()=>{
+    body.innerHTML = `
+      <h3>Recurring bill</h3>
+      <p class="desc">Adds straight to your monthly Expenses — no cash changes hands right now.</p>
+      <div class="modal-field"><label>New bill amount / month</label><input id="mf_amt" type="number" placeholder="150"></div>
+      <div class="modal-actions">
+        <button class="cancel" id="modalCancel">Cancel</button>
+        <button class="confirm" id="modalConfirm">Add to Expenses</button>
+      </div>`;
+    $('#modalCancel').onclick = closeModal;
+    $('#modalConfirm').onclick = ()=>{
+      const amt = Number($('#mf_amt').value||0);
+      state.expense.responsibility = Number(state.expense.responsibility||0) + amt;
+      render();
+      toast(`+${fmt(amt)}/mo added to recurring Responsibility bills`);
+      closeModal();
+    };
+  };
+}
+$('#responsibilityBtn').addEventListener('click', openResponsibilityModal);
+
+/* ================= MARRIAGE ================= */
+$('#marriageBtn').addEventListener('click', ()=>{
+  const body = $('#modalBody');
+  body.innerHTML = `
+    <h3>💍 Marriage Card</h3>
+    <p class="desc">Pick your avatar side to apply the right financial rule.</p>
+    <div class="modal-actions">
+      <button class="confirm" id="mMale" style="background:var(--teal); color:#fff;">Male (Red side)</button>
+      <button class="confirm" id="mFemale" style="background:var(--pink); color:#fff;">Female (Green side)</button>
+    </div>
+  `;
+  $('#modalBackdrop').classList.add('show');
+  $('#mMale').onclick = ()=>{ closeModal(); openModal2('maleMarriage'); };
+  $('#mFemale').onclick = ()=>{ closeModal(); openModal2('femaleMarriage'); };
+});
+
+function openModal2(type){
+  const body = $('#modalBody');
+  if(type==='maleMarriage'){
+    body.innerHTML = `
+      <h3>Marriage — Male side</h3>
+      <p class="desc">Wajib cash gift minus Mahr &amp; Shabka (physical) → leftover goes to Cash on Hand. Baraka + household expenses go to the Ledger.</p>
+      <div class="modal-field"><label>Wajib cash gift received</label><input id="mf_wajib" type="number" placeholder="15000"></div>
+      <div class="modal-field"><label>Mahr + Shabka cost (paid in bills)</label><input id="mf_mahr" type="number" placeholder="9000"></div>
+      <div class="modal-field"><label>Baraka — new recurring income</label><input id="mf_baraka" type="number" placeholder="800"></div>
+      <div class="modal-field"><label>New household expenses</label><input id="mf_hh" type="number" placeholder="900"></div>
+      <div class="modal-actions">
+        <button class="cancel" id="modalCancel">Cancel</button>
+        <button class="confirm" id="modalConfirm">Confirm</button>
+      </div>`;
+    $('#modalBackdrop').classList.add('show');
+    $('#modalCancel').onclick = closeModal;
+    $('#modalConfirm').onclick = ()=>{
+      const wajib = Number($('#mf_wajib').value||0), mahr = Number($('#mf_mahr').value||0);
+      const leftover = wajib - mahr;
+      const baraka = Number($('#mf_baraka').value||0), hh = Number($('#mf_hh').value||0);
+      const applyRest = ()=>{
+        state.income.baraka = baraka;
+        state.expense.marriage = hh;
+        toast(`Mahr/Shabka paid in bills · ${leftover>=0?fmt(leftover)+' EGP leftover added to cash':'shortfall covered'} · Ledger updated`);
+        closeModal();
+        render();
+      };
+      if(leftover >= 0){ state.cash += leftover; applyRest(); }
+      else { attemptSpend(Math.abs(leftover), 'Mahr & Shabka (short of Wajib gift)', applyRest); }
+    };
+  } else {
+    body.innerHTML = `
+      <h3>Marriage — Female side</h3>
+      <p class="desc">Mahr → Cash on Hand. Shabka → Assets. Active expenses halve, but the Escape Target stays at the original number.</p>
+      <div class="modal-field"><label>Mahr received (cash)</label><input id="mf_mahr2" type="number" placeholder="9000"></div>
+      <div class="modal-field"><label>Shabka value (added to Assets)</label><input id="mf_shabka" type="number" placeholder="5000"></div>
+      <div class="modal-actions">
+        <button class="cancel" id="modalCancel">Cancel</button>
+        <button class="confirm" id="modalConfirm">Confirm</button>
+      </div>`;
+    $('#modalBackdrop').classList.add('show');
+    $('#modalCancel').onclick = closeModal;
+    $('#modalConfirm').onclick = ()=>{
+      const mahr = Number($('#mf_mahr2').value||0), shabka = Number($('#mf_shabka').value||0);
+      state.cash += mahr;
+      state.assets.push({name:'Shabka (jewelry)', type:'Marriage', income:0, cost:shabka});
+      const originalExpTotal = totals().exp;
+      Object.keys(state.expense).forEach(k=> state.expense[k] = state.expense[k]/2);
+      state.escapeTargetOverride = originalExpTotal;
+      render();
+      toast(`Mahr ${fmt(mahr)} EGP added to cash · Shabka added to Assets · expenses halved · Escape Target locked at ${fmt(originalExpTotal)} (not the lower halved number)`);
+      closeModal();
+    };
+  }
+}
+
+/* ================= BANKRUPTCY ================= */
+$('#bankruptBtn').addEventListener('click', ()=>{
+  const body = $('#modalBody');
+  body.innerHTML = `
+    <h3>⚠️ Bankruptcy</h3>
+    <p class="desc">The app tallies who's owed the most so the table knows the payout order instantly — assets still change hands physically.</p>
+    <div class="modal-field"><label>Total owed to creditors</label><input id="mf_owed" type="number" placeholder="12000"></div>
+    <div class="modal-actions">
+      <button class="cancel" id="modalCancel">Cancel</button>
+      <button class="confirm" id="modalConfirm" style="background:var(--red); color:#fff;">Confirm Bankruptcy</button>
+    </div>`;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = closeModal;
+  $('#modalConfirm').onclick = ()=>{
+    const sorted = [...state.liabilities].sort((a,b)=> (b.installment)-(a.installment));
+    const order = sorted.length ? sorted.map(l=>l.name).join(' → ') : 'Bank (no player loans logged)';
+    state.cash = 0; state.assets = []; state.liabilities = []; state.stocks = []; state.startups = [];
+    Object.keys(state.income).forEach(k=> state.income[k]=0);
+    render();
+    toast(`Payout order (highest owed first): ${order}. Token removed from board.`);
+    closeModal();
+  };
+});
+
+/* ================= ASSET/STOCK/STARTUP/LOAN helper functions ================= */
+function removeAsset(i){ state.assets.splice(i,1); render(); }
+function removeLiability(i){ state.liabilities.splice(i,1); render(); }
+
+function repayLiabilityFull(i){
+  const l = state.liabilities[i];
+  const principal = Number(l.principal||0);
+  if(principal<=0){ toast('No principal recorded for this loan — remove it manually with ✕ instead'); return; }
+  attemptSpend(principal, `Repaying "${l.name}" in full`, ()=>{
+    state.liabilities.splice(i,1);
+    toast(`Repaid ${fmt(principal)} EGP · "${l.name}" closed out, installment removed from Expenses`);
+  });
+}
+window.repayLiabilityFull = repayLiabilityFull;
+
+function sellAsset(i){
+  const a = state.assets[i];
+  const isRE = a.type==='Real Estate';
+  const suggested = isRE ? (a.cost||0) + state.reSaleModifier : (a.cost||0);
+  const body = $('#modalBody');
+  body.innerHTML = `
+    <h3>🤝 Sell "${a.name}" to a buyer</h3>
+    <p class="desc">Negotiate the price with another player or the bank. Bought for ${fmt(a.cost||0)} EGP.${isRE && state.reSaleModifier!==0 ? ` A Market card is currently adjusting Real Estate sales by ${state.reSaleModifier>0?'+':''}${fmt(state.reSaleModifier)} EGP — already reflected in the suggested price below.` : ''}</p>
+    <div class="modal-field"><label>Buyer's offer (physical cash received)</label><input id="mf_price" type="number" placeholder="${suggested}"></div>
+    <div class="modal-actions">
+      <button class="cancel" id="modalCancel">Cancel</button>
+      <button class="confirm" id="modalConfirm">Confirm Sale</button>
+    </div>`;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = closeModal;
+  $('#modalConfirm').onclick = ()=>{
+    const price = Number($('#mf_price').value || suggested || 0);
+    const gain = price - (a.cost||0);
+    state.cash += price;
+    state.assets.splice(i,1);
+    let bonusNote = '';
+    if(isRE && state.reSaleModifier!==0){ bonusNote = ` (includes ${state.reSaleModifier>0?'+':''}${fmt(state.reSaleModifier)} EGP Market bonus, now consumed)`; state.reSaleModifier = 0; }
+    render();
+    toast(`Sold for ${fmt(price)} EGP in bills${bonusNote} · ${gain>=0?'profit':'loss'} of ${fmt(Math.abs(gain))} EGP`);
+    closeModal();
+  };
+}
+
+/* ================= GENERIC PURCHASE HELPERS ================= */
+/* Flat assets: pay a cost, get a steady monthly income — stored in state.assets (sellable/redeemable) */
+function openFlatAssetPurchase(category, options){
+  const body = $('#modalBody');
+  function showForm(subtypeName){
+    body.innerHTML = `
+      <h3>${subtypeName}</h3>
+      <p class="desc">Pay physical cash now; the monthly return updates the Ledger automatically. Redeemable/sellable any time from Assets &amp; Debt.</p>
+      <div class="modal-field"><label>Cost (physical bills)</label><input id="mf_cost" type="number" placeholder="5000"></div>
+      <div class="modal-field"><label>Monthly return / income</label><input id="mf_income" type="number" placeholder="150"></div>
+      <div class="modal-actions">
+        <button class="cancel" id="modalCancel">Cancel</button>
+        <button class="confirm" id="modalConfirm">Buy</button>
+      </div>`;
+    $('#modalBackdrop').classList.add('show');
+    $('#modalCancel').onclick = closeModal;
+    $('#modalConfirm').onclick = ()=>{
+      const cost = Number($('#mf_cost').value||0), income = Number($('#mf_income').value||0);
+      attemptSpend(cost, `Buying "${subtypeName}"`, ()=>{
+        state.assets.push({name:subtypeName, type:category, income, cost});
+        toast(`Paid ${fmt(cost)} EGP in bills · +${fmt(income)}/mo added to Ledger (${category})`);
+        closeModal();
+      });
+    };
+  }
+  if(options.length===1){ showForm(options[0]); return; }
+  body.innerHTML = `
+    <h3>${category}</h3>
+    <p class="desc">Choose a type from the deck.</p>
+    <div class="modal-actions" style="flex-direction:column; gap:8px;">
+      ${options.map((o,i)=>`<button class="confirm" data-opt="${i}" style="background:var(--papyrus); color:var(--ink); border:2px solid var(--ink);">${o}</button>`).join('')}
+    </div>
+    <div class="modal-actions"><button class="cancel" id="modalCancel" style="flex:1;">Cancel</button></div>
+  `;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = closeModal;
+  body.querySelectorAll('[data-opt]').forEach(btn=>{
+    btn.onclick = ()=> showForm(options[Number(btn.dataset.opt)]);
+  });
+}
+
+/* Tradeable holdings: price × quantity, value can rally/drop — stored in state.stocks (roll/set price/sell) */
+function openHoldingPurchase(category, options){
+  const body = $('#modalBody');
+  function showForm(subtypeName){
+    body.innerHTML = `
+      <h3>${subtypeName}</h3>
+      <p class="desc">Pay price × quantity now. Value can rally or drop later — roll a market move, set an exact price, or sell any time from Assets &amp; Debt.</p>
+      <div class="modal-field"><label>Price per unit</label><input id="mf_price" type="number" placeholder="50"></div>
+      <div class="modal-field"><label>Quantity</label><input id="mf_qty" type="number" placeholder="10"></div>
+      <div class="modal-actions">
+        <button class="cancel" id="modalCancel">Cancel</button>
+        <button class="confirm" id="modalConfirm">Buy</button>
+      </div>`;
+    $('#modalBackdrop').classList.add('show');
+    $('#modalCancel').onclick = closeModal;
+    $('#modalConfirm').onclick = ()=>{
+      const price = Number($('#mf_price').value||0), qty = Number($('#mf_qty').value||0);
+      const cost = price*qty;
+      attemptSpend(cost, `Buying ${fmt(qty)} ${subtypeName}`, ()=>{
+        state.stocks.push({name:subtypeName, category, qty, buyPrice:price, currentPrice:price, dividend:0});
+        toast(`Bought ${fmt(qty)} ${subtypeName} @ ${fmt(price)} · paid ${fmt(cost)} EGP in bills`);
+        closeModal();
+      });
+    };
+  }
+  if(options.length===1){ showForm(options[0]); return; }
+  body.innerHTML = `
+    <h3>${category}</h3>
+    <p class="desc">Choose a type from the deck.</p>
+    <div class="modal-actions" style="flex-direction:column; gap:8px;">
+      ${options.map((o,i)=>`<button class="confirm" data-opt="${i}" style="background:var(--papyrus); color:var(--ink); border:2px solid var(--ink);">${o}</button>`).join('')}
+    </div>
+    <div class="modal-actions"><button class="cancel" id="modalCancel" style="flex:1;">Cancel</button></div>
+  `;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = closeModal;
+  body.querySelectorAll('[data-opt]').forEach(btn=>{
+    btn.onclick = ()=> showForm(options[Number(btn.dataset.opt)]);
+  });
+}
+
+/* ================= FIXED STOCK CATALOG (Chance deck) =================
+   These 4 companies live on the physical Chance deck with fixed starting
+   prices, dividends, and a bounded trading range. */
+const stockCatalog = [
+  {name:'Nile Commerce Bank', kind:'Preferred', startPrice:75, dividend:5, min:60, max:100},
+  {name:'Sphinx Capital', kind:'Preferred', startPrice:95, dividend:7, min:75, max:130},
+  {name:'Pharaoh Construction', kind:'Common', startPrice:12, dividend:0, min:6, max:20},
+  {name:'Delta Electric', kind:'Common', startPrice:8, dividend:0, min:4, max:20},
+];
+
+function openStockCatalog(){
+  const body = $('#modalBody');
+  body.innerHTML = `
+    <h3>📈 Buy Stock</h3>
+    <p class="desc">Landed on the Chance deck and drew a stock card — pick the company written on it.</p>
+    <div class="modal-actions" style="flex-direction:column; gap:8px;">
+      ${stockCatalog.map((s,i)=>`
+        <button class="confirm" data-sc="${i}" style="background:#fff; color:var(--ink); border:2px solid var(--ink); text-align:left; display:flex; flex-direction:column; align-items:flex-start; gap:2px;">
+          <span style="font-weight:800;">${s.name} <span style="font-weight:600; font-size:10.5px; opacity:0.6;">(${s.kind})</span></span>
+          <span style="font-size:11px; font-weight:600; opacity:0.75;">${fmt(s.startPrice)} EGP/share · dividend ${fmt(s.dividend)}/share · range ${fmt(s.min)}–${fmt(s.max)}</span>
+        </button>`).join('')}
+    </div>
+    <div class="modal-actions"><button class="cancel" id="modalCancel" style="flex:1;">Cancel</button></div>
+  `;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = closeModal;
+  body.querySelectorAll('[data-sc]').forEach(btn=>{
+    btn.onclick = ()=> showStockQtyForm(stockCatalog[Number(btn.dataset.sc)]);
+  });
+}
+
+function showStockQtyForm(s){
+  const body = $('#modalBody');
+  body.innerHTML = `
+    <h3>${s.name}</h3>
+    <p class="desc">${s.kind} stock · starting price ${fmt(s.startPrice)} EGP/share · dividend ${fmt(s.dividend)}/share/mo · trades between ${fmt(s.min)} and ${fmt(s.max)} EGP.</p>
+    <div class="modal-field"><label>Quantity (shares)</label><input id="mf_qty" type="number" placeholder="10"></div>
+    <div class="modal-actions">
+      <button class="cancel" id="modalCancel">Back</button>
+      <button class="confirm" id="modalConfirm">Buy</button>
+    </div>`;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = openStockCatalog;
+  $('#modalConfirm').onclick = ()=>{
+    const qty = Number($('#mf_qty').value||0);
+    const cost = qty * s.startPrice;
+    attemptSpend(cost, `Buying ${fmt(qty)} ${s.name} shares`, ()=>{
+      state.stocks.push({name:s.name, category:'Stock', kind:s.kind, qty, buyPrice:s.startPrice, currentPrice:s.startPrice, dividend:qty*s.dividend, minPrice:s.min, maxPrice:s.max});
+      toast(`Bought ${fmt(qty)} ${s.name} shares @ ${fmt(s.startPrice)} · paid ${fmt(cost)} EGP in bills · +${fmt(qty*s.dividend)}/mo dividend`);
+      closeModal();
+    });
+  };
+}
+$('#buyStockBtn').addEventListener('click', openStockCatalog);
+
+function removeStock(i){ state.stocks.splice(i,1); render(); }
+function rollStock(i){
+  const s = state.stocks[i];
+  const pct = (Math.random()*45 - 20) / 100;
+  let next = Math.max(1, Math.round(s.currentPrice * (1+pct)));
+  if(s.minPrice!=null && s.maxPrice!=null) next = Math.min(s.maxPrice, Math.max(s.minPrice, next));
+  s.currentPrice = next;
+  render();
+  toast(`Market moved ${s.name} ${pct>=0?'up':'down'} ${Math.abs(Math.round(pct*100))}% → now ${fmt(s.currentPrice)} EGP/share${s.minPrice!=null?` (range ${fmt(s.minPrice)}–${fmt(s.maxPrice)})`:''}`);
+}
+function editStockPrice(i){
+  const s = state.stocks[i];
+  const body = $('#modalBody');
+  body.innerHTML = `
+    <h3>Set new price — ${s.name}</h3>
+    <p class="desc">Use this when a Market or Chance card states an exact new price per share.${s.minPrice!=null?` This stock trades between ${fmt(s.minPrice)} and ${fmt(s.maxPrice)} EGP.`:''}</p>
+    <div class="modal-field"><label>New price per share</label><input id="mf_np" type="number" placeholder="${s.currentPrice}"></div>
+    <div class="modal-actions">
+      <button class="cancel" id="modalCancel">Cancel</button>
+      <button class="confirm" id="modalConfirm">Update</button>
+    </div>`;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = closeModal;
+  $('#modalConfirm').onclick = ()=>{
+    let np = Number($('#mf_np').value || s.currentPrice);
+    if(s.minPrice!=null && s.maxPrice!=null) np = Math.min(s.maxPrice, Math.max(s.minPrice, np));
+    s.currentPrice = np;
+    render();
+    toast(`${s.name} now priced at ${fmt(s.currentPrice)} EGP/share`);
+    closeModal();
+  };
+}
+function sellStock(i){
+  const s = state.stocks[i];
+  const proceeds = s.qty * s.currentPrice;
+  const cost = s.qty * s.buyPrice;
+  const gain = proceeds - cost;
+  state.cash += proceeds;
+  state.stocks.splice(i,1);
+  render();
+  toast(`Sold ${fmt(s.qty)} shares for ${fmt(proceeds)} EGP in bills · ${gain>=0?'profit':'loss'} of ${fmt(Math.abs(gain))} EGP`);
+}
+
+function activateStartup(i){
+  const s = state.startups[i];
+  s.active = true;
+  render();
+  toast(`Market card activated "${s.name}" · +${fmt(s.monthlyIncome)}/mo now on the Ledger`);
+}
+function removeStartup(i){
+  const s = state.startups[i];
+  state.startups.splice(i,1);
+  render();
+  toast(`"${s.name}" written off · ${fmt(s.cost)} EGP investment lost`);
+}
+
+function removeLoanOut(i){
+  const l = state.loansOut[i];
+  state.loansOut.splice(i,1);
+  render();
+  toast(`"${l.name}" loan closed out`);
+}
+
+/* ================= QUICK CASH (Luck / Hustle) ================= */
+function openCardCashModal(){
+  const body = $('#modalBody');
+  body.innerHTML = `
+    <h3>🎴 Luck / Hustle Card</h3>
+    <p class="desc">One-off cash effect — pick direction, enter the amount, done. This does not touch recurring income/expenses.</p>
+    <div class="modal-actions">
+      <button class="confirm" id="cGain" style="background:var(--teal); color:#fff;">💰 I receive cash</button>
+      <button class="confirm" id="cLose" style="background:var(--red); color:#fff;">📉 I pay cash</button>
+    </div>
+  `;
+  $('#modalBackdrop').classList.add('show');
+  const openAmount = (sign)=>{
+    body.innerHTML = `
+      <h3>${sign>0?'💰 Receive cash':'📉 Pay cash'}</h3>
+      <div class="modal-field"><label>Reason (optional)</label><input id="mf_reason" type="text" placeholder="e.g. Eidiya from family / car broke down"></div>
+      <div class="modal-field"><label>Amount (physical bills)</label><input id="mf_amt" type="number" placeholder="500"></div>
+      <div class="modal-actions">
+        <button class="cancel" id="modalCancel">Cancel</button>
+        <button class="confirm" id="modalConfirm">Confirm</button>
+      </div>`;
+    $('#modalCancel').onclick = closeModal;
+    $('#modalConfirm').onclick = ()=>{
+      const amt = Number($('#mf_amt').value||0);
+      const reason = $('#mf_reason').value ? ` — ${$('#mf_reason').value}` : '';
+      if(sign>0){
+        state.cash += amt; render();
+        toast(`+${fmt(amt)} EGP${reason} · Cash on hand updated`);
+        closeModal();
+      } else {
+        attemptSpend(amt, `Card payment${reason}`, ()=>{
+          toast(`-${fmt(amt)} EGP${reason} · Cash on hand updated`);
+          closeModal();
+        });
+      }
+    };
+  };
+  $('#cGain').onclick = ()=> openAmount(1);
+  $('#cLose').onclick = ()=> openAmount(-1);
+}
+$('#cardCashBtn').addEventListener('click', openCardCashModal);
+$('#cardCashBtn2').addEventListener('click', openCardCashModal);
+
+/* ================= CHARITY ================= */
+$('#charityBtn').addEventListener('click', ()=>{
+  attemptSpend(200, 'Charity donation', ()=>{
+    state.diceBonus = true; render();
+    toast('Donated 200 EGP · roll 2 dice until you pass Charity again 🎲🎲');
+  });
+});
+$('#clearDiceBonus').addEventListener('click', ()=>{
+  state.diceBonus = false; render();
+  toast('Bonus cleared — back to a single die');
+});
+
+/* ================= MARKET DECK — exact physical deck (62 cards) ================= */
+
+// helpers for card effects
+function setPriceByName(name, price){
+  let n=0;
+  state.stocks.forEach(s=>{ if(s.name===name){ let p=price; if(s.minPrice!=null) p=Math.min(s.maxPrice,Math.max(s.minPrice,p)); s.currentPrice=p; n++; } });
+  return n;
+}
+function setPriceByKind(kind, price){
+  let n=0;
+  state.stocks.forEach(s=>{ if(s.kind===kind){ let p=price; if(s.minPrice!=null) p=Math.min(s.maxPrice,Math.max(s.minPrice,p)); s.currentPrice=p; n++; } });
+  return n;
+}
+function setPriceByCategoryName(category, name, price){
+  let n=0;
+  state.stocks.forEach(s=>{ if(s.category===category && s.name===name){ s.currentPrice=price; n++; } });
+  return n;
+}
+function countByCategoryName(category, name){ return state.stocks.filter(s=>s.category===category && s.name===name).length; }
+function activateOrCreateStartup(name, income){
+  let s = state.startups.find(x=>x.name===name);
+  if(s){ s.active=true; s.monthlyIncome=income; }
+  else { state.startups.push({name, cost:0, monthlyIncome:income, active:true}); }
+}
+function sellStartupsAt(price, onlyActive){
+  const toSell = state.startups.filter(s=> onlyActive ? s.active : true);
+  const count = toSell.length;
+  state.cash += count*price;
+  state.startups = state.startups.filter(s=> onlyActive ? !s.active : false);
+  return count;
+}
+
+const marketDeck = [
+  // ---- Economy ----
+  { name:'Inflation Spike', nameAr:'موجة تضخم', tag:'Economy', tagAr:'اقتصاد', dir:'down',
+    desc:'Prices up everywhere. Every player pays £E 2,000 this round.',
+    apply:()=>{ payFixedGuarded(2000, 'Inflation Spike'); } },
+  { name:'Currency Devaluation', nameAr:'تعويم الجنيه', tag:'Economy', tagAr:'اقتصاد', dir:'up',
+    desc:'The pound dropped. Any USD Exchange holder may sell at £E 7,000 per card.',
+    apply:()=>{ const n=setPriceByCategoryName('Currency','USD',7000); return `USD price set to 7,000 EGP · ${n} holding(s) updated — sell any time.`; } },
+  { name:'Tourism Boom', nameAr:'طفرة سياحة', tag:'Economy', tagAr:'اقتصاد', dir:'up',
+    desc:'Tourist season peak. Every Shop collects +£E 500, every Cart +£E 300 this round.',
+    needsQty:{shop:'How many Shops?', cart:'How many Carts?'},
+    apply:(q)=>{ const total = (q.shop||0)*500 + (q.cart||0)*300; state.cash+=total; return `+${fmt(total)} EGP (${q.shop||0} Shops × 500 + ${q.cart||0} Carts × 300).`; } },
+  { name:'Suez Canal Expansion', nameAr:'توسعة قناة السويس', tag:'Economy', tagAr:'اقتصاد', dir:'up',
+    desc:'New trade corridor opens. Every held Startup activates and starts earning this round.',
+    apply:()=>{ let n=0; state.startups.forEach(s=>{ if(!s.active){ s.active=true; n++; } }); return `${n} dormant startup(s) activated.`; } },
+  { name:'Recession', nameAr:'ركود اقتصادي', tag:'Economy', tagAr:'اقتصاد', dir:'down',
+    desc:'People stopped spending. Every Shop, Cart, Parking, and Recycling pays £E 500 this round.',
+    needsQty:{biz:'How many Small Biz assets (Shop/Cart/Parking/Recycling)?'},
+    apply:(q)=>{ payFixedGuarded((q.biz||0)*500, 'Recession'); } },
+  { name:'Ramadan Peak', nameAr:'ذروة رمضان', tag:'Economy', tagAr:'اقتصاد', dir:'up',
+    desc:'Biggest food month of the year. Food Shops collect +£E 1,000, Carts +£E 500 this round.',
+    needsQty:{shop:'How many Food Shops?', cart:'How many Carts?'},
+    apply:(q)=>{ const total=(q.shop||0)*1000+(q.cart||0)*500; state.cash+=total; return `+${fmt(total)} EGP (${q.shop||0} Food Shops × 1,000 + ${q.cart||0} Carts × 500).`; } },
+  { name:'Subsidy Cuts', nameAr:'رفع الدعم', tag:'Economy', tagAr:'اقتصاد', dir:'down',
+    desc:'Fuel and electricity subsidies cut. Every player pays £E 1,000 this round.',
+    apply:()=>{ payFixedGuarded(1000, 'Subsidy Cuts'); } },
+  { name:'Mega Project', nameAr:'مشروع قومي', tag:'Economy', tagAr:'اقتصاد', dir:'up',
+    desc:'New national project announced. Any 5 Fadan sells at £E 180,000. Any 20 Fadan sells at £E 500,000.',
+    apply:()=>{ return 'Land is now sellable at 180,000 EGP (5 Feddan) or 500,000 EGP (20 Feddan) — use Sell to a buyer in Assets & Debt.'; } },
+
+  // ---- CBE Rates ----
+  { name:'CBE Rate Hike', nameAr:'البنك المركزي رفع الفايدة', tag:'CBE Rates', tagAr:'أسعار البنك', dir:'up',
+    desc:'Central Bank raised rates. Every Fixed Income card collects an extra £E 500 this round.',
+    needsQty:{fi:'How many Fixed Income cards?'},
+    apply:(q)=>{ const total=(q.fi||0)*500; state.cash+=total; return `+${fmt(total)} EGP (${q.fi||0} Fixed Income × 500).`; } },
+  { name:'CBE Rate Cut', nameAr:'البنك المركزي خفض الفايدة', tag:'CBE Rates', tagAr:'أسعار البنك', dir:'up',
+    desc:'Cheap money lifts equities. Any Common Stock sells at £E 25 per share.',
+    apply:()=>{ const n=setPriceByKind('Common',25); return `Common stock price set to 25 EGP/share · ${n} holding(s) updated.`; } },
+  { name:'Savings Certificate Special', nameAr:'شهادة استثنائية', tag:'CBE Rates', tagAr:'أسعار البنك', dir:'up',
+    desc:'CBE high-yield certificate. Every £E 5,000 Savings Cloud unit collects +£E 500 this round.',
+    needsQty:{units:'How many £5,000 Savings Cloud units?'},
+    apply:(q)=>{ const total=(q.units||0)*500; state.cash+=total; return `+${fmt(total)} EGP (${q.units||0} Savings Cloud units × 500).`; } },
+  { name:'Reserve Requirement Raised', nameAr:'رفع الاحتياطي', tag:'CBE Rates', tagAr:'أسعار البنك', dir:'down',
+    desc:'Banks tightened. Fixed Income holders skip their next earnings payment (one round only).',
+    apply:()=>{ return 'Reminder: skip your Fixed Income card(s) next earnings collection — one round only.'; } },
+
+  // ---- Real Estate ----
+  { name:'New Metro Line', nameAr:'خط مترو جديد', tag:'Real Estate', tagAr:'عقار', dir:'up',
+    desc:'Metro extension opened. Any Real Estate sold this round adds £E 100,000 to its listed sell price.',
+    apply:()=>{ state.reSaleModifier += 100000; return '+100,000 EGP added to your next Real Estate sale this round (auto-applied in Sell).'; } },
+  { name:'Rent Law Reform', nameAr:'إصلاح قانون الإيجار', tag:'Real Estate', tagAr:'عقار', dir:'up',
+    desc:'Landlords can raise rent. Every RE property earns an extra £E 500/month permanently.',
+    apply:()=>{ let n=0; state.assets.forEach(a=>{ if(a.type==='Real Estate'){ a.income=(Number(a.income)||0)+500; n++; } }); return `${n} Real Estate propert(y/ies) +500 EGP/mo permanently.`; } },
+  { name:'RE Bubble Burst', nameAr:'فقاعة العقار انفجرت', tag:'Real Estate', tagAr:'عقار', dir:'down',
+    desc:'Prices crashed. Any RE sold this round loses £E 50,000 from its listed sell price.',
+    apply:()=>{ state.reSaleModifier -= 50000; return '-50,000 EGP on your next Real Estate sale this round (auto-applied in Sell).'; } },
+  { name:'Compound Launch', nameAr:'إطلاق كومباوند', tag:'Real Estate', tagAr:'عقار', dir:'up',
+    desc:'New compound lifted the area. Any RE sold this round adds £E 50,000 to sell price.',
+    apply:()=>{ state.reSaleModifier += 50000; return '+50,000 EGP added to your next Real Estate sale this round (auto-applied in Sell).'; } },
+  { name:'Construction Cost Spike', nameAr:'ارتفاع تكاليف البناء', tag:'Real Estate', tagAr:'عقار', dir:'neutral',
+    desc:'Rebar and cement up. Anyone who buys RE next round pays £E 5,000 extra on the down payment.',
+    apply:()=>{ state.reBuyExtra += 5000; return '+5,000 EGP added to your next Real Estate purchase (auto-applied in Buy Real Estate).'; } },
+  { name:'Foreign Buyer Rush', nameAr:'إقبال مشترين أجانب', tag:'Real Estate', tagAr:'عقار', dir:'up',
+    desc:'Gulf and European investors buying. Any RE sold this round adds £E 75,000 to sell price.',
+    apply:()=>{ state.reSaleModifier += 75000; return '+75,000 EGP added to your next Real Estate sale this round (auto-applied in Sell).'; } },
+  { name:'Property Tax', nameAr:'ضريبة عقارية', tag:'Real Estate', tagAr:'عقار', dir:'down',
+    desc:'New property tax. Every RE owner pays £E 5,000 per property, one time.',
+    needsQty:{re:'How many Real Estate properties do you own?'},
+    apply:(q)=>{ payFixedGuarded((q.re||0)*5000, 'Property Tax'); } },
+
+  // ---- Small Biz ----
+  { name:'Mall Foot Traffic', nameAr:'زحمة المولات', tag:'Small Biz', tagAr:'أعمال صغيرة', dir:'up',
+    desc:'Weekend sales packed malls. Every Shop collects +£E 500 this round.',
+    needsQty:{shop:'How many Shops?'}, apply:(q)=>{ const t=(q.shop||0)*500; state.cash+=t; return `+${fmt(t)} EGP (${q.shop||0} Shops × 500).`; } },
+  { name:'Cart Permits Crackdown', nameAr:'حملة على العربيات', tag:'Small Biz', tagAr:'أعمال صغيرة', dir:'down',
+    desc:'Municipal crackdown on street vendors. Every Cart pays £E 300 this round.',
+    needsQty:{cart:'How many Carts?'}, apply:(q)=>{ payFixedGuarded((q.cart||0)*300, 'Cart Permits Crackdown'); } },
+  { name:'Delivery App Launch', nameAr:'تطبيق توصيل جديد', tag:'Small Biz', tagAr:'أعمال صغيرة', dir:'up',
+    desc:'New delivery app lists your products. Every Shop collects +£E 400 this round.',
+    needsQty:{shop:'How many Shops?'}, apply:(q)=>{ const t=(q.shop||0)*400; state.cash+=t; return `+${fmt(t)} EGP (${q.shop||0} Shops × 400).`; } },
+  { name:'Food Festival', nameAr:'فيستيفال أكل', tag:'Small Biz', tagAr:'أعمال صغيرة', dir:'up',
+    desc:'Food festival on the Corniche. Food Shops +£E 700, Carts +£E 500 this round.',
+    needsQty:{shop:'How many Food Shops?', cart:'How many Carts?'},
+    apply:(q)=>{ const t=(q.shop||0)*700+(q.cart||0)*500; state.cash+=t; return `+${fmt(t)} EGP (${q.shop||0} Food Shops × 700 + ${q.cart||0} Carts × 500).`; } },
+  { name:'Rent Increase', nameAr:'زيادة الإيجار', tag:'Small Biz', tagAr:'أعمال صغيرة', dir:'down',
+    desc:'Landlords raised rent. Every Shop pays £E 200 this round.',
+    needsQty:{shop:'How many Shops?'}, apply:(q)=>{ payFixedGuarded((q.shop||0)*200, 'Rent Increase'); } },
+  { name:'Supplier Strike', nameAr:'إضراب الموردين', tag:'Small Biz', tagAr:'أعمال صغيرة', dir:'down',
+    desc:'Wholesale distributors on strike. Every Shop pays £E 400 this round.',
+    needsQty:{shop:'How many Shops?'}, apply:(q)=>{ payFixedGuarded((q.shop||0)*400, 'Supplier Strike'); } },
+  { name:'Parking Demand Surge', nameAr:'زحمة ركن', tag:'Small Biz', tagAr:'أعمال صغيرة', dir:'up',
+    desc:'New office tower nearby. Every Parking lot collects +£E 600 this round.',
+    needsQty:{parking:'How many Parking lots?'}, apply:(q)=>{ const t=(q.parking||0)*600; state.cash+=t; return `+${fmt(t)} EGP (${q.parking||0} Parking × 600).`; } },
+  { name:'Recycling Export Deal', nameAr:'صفقة تصدير خردة', tag:'Small Biz', tagAr:'أعمال صغيرة', dir:'up',
+    desc:'European buyer signed bulk scrap contract. Every Recycling operation +£E 400 this round.',
+    needsQty:{recycling:'How many Recycling operations?'}, apply:(q)=>{ const t=(q.recycling||0)*400; state.cash+=t; return `+${fmt(t)} EGP (${q.recycling||0} Recycling × 400).`; } },
+  { name:'Neighborhood Boom', nameAr:'الحي اتطور', tag:'Small Biz', tagAr:'أعمال صغيرة', dir:'up',
+    desc:'Neighborhood upgrade. Every Shop, Cart, Parking, Recycling +£E 300 this round.',
+    needsQty:{biz:'How many Small Biz assets total?'}, apply:(q)=>{ const t=(q.biz||0)*300; state.cash+=t; return `+${fmt(t)} EGP (${q.biz||0} Small Biz × 300).`; } },
+  { name:'Buy Egyptian Campaign', nameAr:'حملة اشتري مصري', tag:'Small Biz', tagAr:'أعمال صغيرة', dir:'up',
+    desc:'Ministry campaign favors local shops. Every Shop +£E 500 this round.',
+    needsQty:{shop:'How many Shops?'}, apply:(q)=>{ const t=(q.shop||0)*500; state.cash+=t; return `+${fmt(t)} EGP (${q.shop||0} Shops × 500).`; } },
+
+  // ---- Stocks EGX ----
+  { name:'EGX Rally', nameAr:'البورصة طالعة', tag:'Stocks EGX', tagAr:'بورصة مصر', dir:'up',
+    desc:'Broad EGX rally. Any Common Stock sells at £E 30 per share this round.',
+    apply:()=>{ const n=setPriceByKind('Common',30); return `Common stock price set to 30 EGP/share · ${n} holding(s) updated.`; } },
+  { name:'EGX Crash', nameAr:'البورصة نازلة', tag:'Stocks EGX', tagAr:'بورصة مصر', dir:'down',
+    desc:'Panic selling hits the market. Any Common Stock sells at £E 5 per share — or hold.',
+    apply:()=>{ const n=setPriceByKind('Common',5); return `Common stock price set to 5 EGP/share · ${n} holding(s) updated (or hold instead of selling).`; } },
+  { name:'Nile Commerce Rally', nameAr:'نايل كومرس طالع', tag:'Stocks EGX', tagAr:'بورصة مصر', dir:'up',
+    desc:'Nile Commerce (Preferred) rallies on banking sector. Sell at £E 120 per share.',
+    apply:()=>{ const n=setPriceByName('Nile Commerce Bank',120); return `Nile Commerce Bank set to 120 EGP/share · ${n} holding(s) updated.`; } },
+  { name:'Sphinx Capital Rally', nameAr:'سفنكس كابيتال طالع', tag:'Stocks EGX', tagAr:'بورصة مصر', dir:'up',
+    desc:'Sphinx Capital (Preferred) rallies. Sell at £E 150 per share.',
+    apply:()=>{ const n=setPriceByName('Sphinx Capital',150); return `Sphinx Capital set to 150 EGP/share · ${n} holding(s) updated (capped at its 130 ceiling).`; } },
+  { name:'Dividend Season', nameAr:'موسم التوزيعات', tag:'Stocks EGX', tagAr:'بورصة مصر', dir:'up',
+    desc:'Big dividend announcements. Every Preferred Stock share pays an extra £E 5 this round.',
+    apply:()=>{ let shares=0; state.stocks.forEach(s=>{ if(s.kind==='Preferred') shares+=s.qty; }); const total=shares*5; state.cash+=total; return `+${fmt(total)} EGP (${shares} preferred shares × 5).`; } },
+  { name:'Delta Electric Rally', nameAr:'دلتا للكهربا طالع', tag:'Stocks EGX', tagAr:'بورصة مصر', dir:'up',
+    desc:'Industrial boom lifts Delta Electric. Sell at £E 20 per share.',
+    apply:()=>{ const n=setPriceByName('Delta Electric',20); return `Delta Electric set to 20 EGP/share · ${n} holding(s) updated.`; } },
+  { name:'Pharaoh Construction Drop', nameAr:'فرعون للإنشاءات نازل', tag:'Stocks EGX', tagAr:'بورصة مصر', dir:'down',
+    desc:'Short-seller report hit Pharaoh Construction. Sell at £E 8 per share — or hold.',
+    apply:()=>{ const n=setPriceByName('Pharaoh Construction',8); return `Pharaoh Construction set to 8 EGP/share · ${n} holding(s) updated (or hold).`; } },
+  { name:'Circuit Breaker', nameAr:'إيقاف التداول', tag:'Stocks EGX', tagAr:'بورصة مصر', dir:'neutral',
+    desc:'EGX trading halted. No Common or Preferred Stock may be sold this round.',
+    apply:()=>{ return 'Reminder: no stock selling allowed at the table this round.'; } },
+  { name:'Foreign Inflows', nameAr:'تدفقات أجنبية', tag:'Stocks EGX', tagAr:'بورصة مصر', dir:'up',
+    desc:'Foreign investors enter EGX. Any Common Stock sells at £E 20 per share.',
+    apply:()=>{ const n=setPriceByKind('Common',20); return `Common stock price set to 20 EGP/share · ${n} holding(s) updated.`; } },
+
+  // ---- Gold & Silver ----
+  { name:'Gold Rally', nameAr:'الذهب طالع', tag:'Gold & Silver', tagAr:'ذهب وفضة', dir:'up',
+    desc:'Global safe-haven rally. Any Gold Certificate sells at £E 8,000 per certificate.',
+    apply:()=>{ const n=setPriceByCategoryName('Precious Metal','Gold Certificate',8000); return `Gold Certificate set to 8,000 EGP · ${n} holding(s) updated.`; } },
+  { name:'Gold Crash', nameAr:'الذهب نازل', tag:'Gold & Silver', tagAr:'ذهب وفضة', dir:'down',
+    desc:'Risk appetite back. Gold Certificate sells at £E 1,500 — or hold.',
+    apply:()=>{ const n=setPriceByCategoryName('Precious Metal','Gold Certificate',1500); return `Gold Certificate set to 1,500 EGP · ${n} holding(s) updated (or hold).`; } },
+  { name:'Silver Industrial Boom', nameAr:'طلب صناعي على الفضة', tag:'Gold & Silver', tagAr:'ذهب وفضة', dir:'up',
+    desc:'Solar and EV demand spiked industrial silver. Silver sells at £E 4,000 per bar.',
+    apply:()=>{ const n=setPriceByCategoryName('Precious Metal','Silver Bullion',4000); return `Silver Bullion set to 4,000 EGP · ${n} holding(s) updated.`; } },
+  { name:'Precious Metals Tax', nameAr:'ضريبة معادن', tag:'Gold & Silver', tagAr:'ذهب وفضة', dir:'down',
+    desc:'New tax on precious metals. Every Gold Cert or Silver bar pays £E 500 this round.',
+    needsQty:{metal:'How many Gold/Silver holdings?'}, apply:(q)=>{ payFixedGuarded((q.metal||0)*500, 'Precious Metals Tax'); } },
+
+  // ---- Land ----
+  { name:'Rezoning Residential', nameAr:'تغيير تصنيف سكني', tag:'Land', tagAr:'أراضي', dir:'up',
+    desc:'Agricultural land rezoned for housing. 5 Fadan sells at £E 180,000. 20 Fadan at £E 400,000.',
+    apply:()=>{ return 'Land sellable now at 180,000 EGP (5 Feddan) or 400,000 EGP (20 Feddan) — use Sell to a buyer.'; } },
+  { name:'Developer Offer', nameAr:'عرض مطور', tag:'Land', tagAr:'أراضي', dir:'up',
+    desc:'Developer offers premium price. 5 Fadan at £E 150,000. 20 Fadan at £E 350,000.',
+    apply:()=>{ return 'Land sellable now at 150,000 EGP (5 Feddan) or 350,000 EGP (20 Feddan) — use Sell to a buyer.'; } },
+  { name:'Agricultural Drought', nameAr:'جفاف زراعي', tag:'Land', tagAr:'أراضي', dir:'down',
+    desc:'Water crisis hit farmland. 5 Fadan at £E 40,000. 20 Fadan at £E 100,000 — or hold.',
+    apply:()=>{ return 'Land only sellable now at 40,000 EGP (5 Feddan) or 100,000 EGP (20 Feddan) — or hold instead.'; } },
+
+  // ---- Startup ----
+  { name:'FinTech Boom', nameAr:'طفرة فينتك', tag:'Startup', tagAr:'ستارت أب', dir:'up',
+    desc:'Digital payments explode. FinTech Startup activates at £E 2,000 earnings per round permanently.',
+    apply:()=>{ activateOrCreateStartup('FinTech Startup',2000); return 'FinTech Startup active · +2,000 EGP/mo permanently.'; } },
+  { name:'EdTech Boom', nameAr:'طفرة تعليم', tag:'Startup', tagAr:'ستارت أب', dir:'up',
+    desc:'Schools adopt digital platforms. EdTech Startup activates at £E 1,500 earnings per round permanently.',
+    apply:()=>{ activateOrCreateStartup('EdTech Startup',1500); return 'EdTech Startup active · +1,500 EGP/mo permanently.'; } },
+  { name:'Delivery Boom', nameAr:'طفرة توصيل', tag:'Startup', tagAr:'ستارت أب', dir:'up',
+    desc:'Delivery volumes tripled. Delivery App Startup activates at £E 1,200 earnings per round permanently.',
+    apply:()=>{ activateOrCreateStartup('Delivery Startup',1200); return 'Delivery Startup active · +1,200 EGP/mo permanently.'; } },
+  { name:'Startup Exit', nameAr:'خروج ستارت أب', tag:'Startup', tagAr:'ستارت أب', dir:'up',
+    desc:'Acquisition wave. Any active Startup sells at £E 80,000 — or hold.',
+    apply:()=>{ const n=sellStartupsAt(80000,true); return `${n} active startup(s) sold for 80,000 EGP each.`; } },
+  { name:'VC Winter', nameAr:'شتاء المستثمرين', tag:'Startup', tagAr:'ستارت أب', dir:'down',
+    desc:'Venture funding dried up. Any Startup sells at £E 5,000 — or hold through winter.',
+    apply:()=>{ const n=sellStartupsAt(5000,false); return `${n} startup(s) sold for 5,000 EGP each.`; } },
+
+  // ---- Fixed Income ----
+  { name:'Sukuk Maturity', nameAr:'استحقاق صكوك', tag:'Fixed Income', tagAr:'دخل ثابت', dir:'up',
+    desc:'All Sukuk reach maturity. Every Fixed Income card pays out +£E 3,000 bonus this round.',
+    needsQty:{fi:'How many Fixed Income cards?'}, apply:(q)=>{ const t=(q.fi||0)*3000; state.cash+=t; return `+${fmt(t)} EGP (${q.fi||0} Fixed Income × 3,000).`; } },
+  { name:'Early Exit Window', nameAr:'نافذة خروج مبكر', tag:'Fixed Income', tagAr:'دخل ثابت', dir:'neutral',
+    desc:'Liquidity window opens. Any Fixed Income may exit at £E 10,000 per card — or stay locked.',
+    apply:()=>{ return 'Fixed Income cards redeemable now at 10,000 EGP each from Assets & Debt — or stay locked.'; } },
+  { name:'Savings Cloud Bonus', nameAr:'مكافأة سحابة الادخار', tag:'Fixed Income', tagAr:'دخل ثابت', dir:'up',
+    desc:'Loyalty bonus. Every £E 5,000 Savings Cloud unit earns +£E 200 this round.',
+    needsQty:{units:'How many £5,000 Savings Cloud units?'}, apply:(q)=>{ const t=(q.units||0)*200; state.cash+=t; return `+${fmt(t)} EGP (${q.units||0} Savings Cloud units × 200).`; } },
+
+  // ---- ETF ----
+  { name:'EGX 30 Rally', nameAr:'إي جي إكس ٣٠ طالع', tag:'ETF', tagAr:'صندوق ETF', dir:'up',
+    desc:'EGX 30 Index all-time high. Any ETF unit sells at £E 15,000.',
+    apply:()=>{ const n=setPriceByCategoryName('Fund','EGX 30',15000); return `EGX 30 unit set to 15,000 EGP · ${n} holding(s) updated.`; } },
+  { name:'EGX 30 Crash', nameAr:'إي جي إكس ٣٠ نازل', tag:'ETF', tagAr:'صندوق ETF', dir:'down',
+    desc:'Major correction. Any ETF unit sells at £E 3,000 — or hold.',
+    apply:()=>{ const n=setPriceByCategoryName('Fund','EGX 30',3000); return `EGX 30 unit set to 3,000 EGP · ${n} holding(s) updated (or hold).`; } },
+
+  // ---- Islamic Fund ----
+  { name:'Islamic Fund Inflows', nameAr:'تدفقات للصندوق الإسلامي', tag:'Islamic Fund', tagAr:'صندوق إسلامي', dir:'up',
+    desc:'Gulf inflows. Any Islamic Fund unit sells at £E 10,000.',
+    apply:()=>{ const n=setPriceByCategoryName('Fund','Islamic Fund',10000); return `Islamic Fund unit set to 10,000 EGP · ${n} holding(s) updated.`; } },
+  { name:'Sharia Index Rally', nameAr:'مؤشر شرعي طالع', tag:'Islamic Fund', tagAr:'صندوق إسلامي', dir:'up',
+    desc:'Sharia index outperforms. Any Islamic Fund unit sells at £E 12,000.',
+    apply:()=>{ const n=setPriceByCategoryName('Fund','Islamic Fund',12000); return `Islamic Fund unit set to 12,000 EGP · ${n} holding(s) updated.`; } },
+
+  // ---- USD Exchange ----
+  { name:'USD Rises', nameAr:'الدولار طلع', tag:'USD Exchange', tagAr:'صرف الدولار', dir:'up',
+    desc:'Dollar shortage. Any USD Exchange card sells at £E 7,000.',
+    apply:()=>{ const n=setPriceByCategoryName('Currency','USD',7000); return `USD set to 7,000 EGP · ${n} holding(s) updated.`; } },
+  { name:'USD Falls', nameAr:'الدولار نزل', tag:'USD Exchange', tagAr:'صرف الدولار', dir:'down',
+    desc:'Foreign inflows strengthened the pound. USD card sells at £E 3,500 — or hold.',
+    apply:()=>{ const n=setPriceByCategoryName('Currency','USD',3500); return `USD set to 3,500 EGP · ${n} holding(s) updated (or hold).`; } },
+
+  // ---- REIT ----
+  { name:'REIT Expansion', nameAr:'توسعة محفظة الريت', tag:'REIT', tagAr:'ريت', dir:'up',
+    desc:'REIT acquired premium properties. Any REIT unit sells at £E 18,000.',
+    apply:()=>{ const n=setPriceByCategoryName('Fund','REIT',18000); return `REIT unit set to 18,000 EGP · ${n} holding(s) updated.`; } },
+  { name:'REIT Tenant Default', nameAr:'مستأجر أفلس', tag:'REIT', tagAr:'ريت', dir:'down',
+    desc:'Anchor tenant defaulted. Any REIT unit sells at £E 8,000 — or hold.',
+    apply:()=>{ const n=setPriceByCategoryName('Fund','REIT',8000); return `REIT unit set to 8,000 EGP · ${n} holding(s) updated (or hold).`; } },
+];
+
+// PAY cards route through the same never-go-negative guard as everything else
+function payFixedGuarded(amount, label){
+  attemptSpend(amount, label, ()=>{
+    cardApplyDone(currentCard, `Paid ${fmt(amount)} EGP.`);
+  });
+}
+let currentCard = null;
+
+function openMarketDeck(){
+  const body = $('#modalBody');
+  const tags = [...new Set(marketDeck.map(c=>c.tag))];
+  body.innerHTML = `
+    <h3>📰 Market Deck</h3>
+    <p class="desc">Draw a card at random, or find the card written on your physical draw. 62 real economics cards.</p>
+    <div class="modal-actions"><button class="confirm" id="mdRandom" style="background:var(--gold); color:var(--ink);">🎴 Draw Random Card</button></div>
+    ${tags.map(tag => `
+      <p class="empty-note" style="text-align:left; padding:8px 0 2px; font-style:normal; font-weight:800; color:var(--green-mid);">${tag}</p>
+      <div class="modal-actions" style="flex-direction:column; gap:6px;">
+        ${marketDeck.map((c,i)=> c.tag===tag ? `<button class="confirm" data-md="${i}" style="background:#fff; color:var(--ink); border:1.5px solid var(--ink); font-size:12.5px; padding:9px;">${c.name}</button>` : '').join('')}
+      </div>`).join('')}
+    <div class="modal-actions"><button class="cancel" id="modalCancel" style="flex:1;">Cancel</button></div>
+  `;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = closeModal;
+  $('#mdRandom').onclick = ()=>{
+    const c = marketDeck[Math.floor(Math.random()*marketDeck.length)];
+    showScenarioDetail(c);
+  };
+  body.querySelectorAll('[data-md]').forEach(btn=>{
+    btn.onclick = ()=> showScenarioDetail(marketDeck[Number(btn.dataset.md)]);
+  });
+}
+
+function showScenarioDetail(card){
+  currentCard = card;
+  const body = $('#modalBody');
+  const dirIcon = card.dir==='up' ? '📈' : card.dir==='down' ? '📉' : '➖';
+  const qtyFields = card.needsQty ? Object.entries(card.needsQty).map(([k,label])=>`
+    <div class="modal-field"><label>${label}</label><input id="mf_q_${k}" type="number" placeholder="0"></div>`).join('') : '';
+  body.innerHTML = `
+    <h3>${dirIcon} ${card.name}</h3>
+    <p class="desc" style="margin-bottom:2px;"><b>${card.tag}</b> · ${card.nameAr}</p>
+    <p class="desc">${card.desc}</p>
+    ${qtyFields}
+    <div class="modal-actions">
+      <button class="cancel" id="modalCancel">Back</button>
+      <button class="confirm" id="modalConfirm" style="background:#1B3A5C; color:#fff;">Apply</button>
+    </div>`;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = openMarketDeck;
+  $('#modalConfirm').onclick = ()=>{
+    let q = {};
+    if(card.needsQty){ Object.keys(card.needsQty).forEach(k=> q[k] = Number($('#mf_q_'+k).value||0)); }
+    const result = card.apply(q);
+    if(typeof result === 'string'){ cardApplyDone(card, result); }
+    // else: card.apply used payFixedGuarded, which completes asynchronously via attemptSpend
+  };
+}
+
+function cardApplyDone(card, summary){
+  render();
+  toast(`📰 ${card.name}: ${summary}`);
+  closeModal();
+}
+
+$('#marketDeckBtn').addEventListener('click', openMarketDeck);
+$('#marketDeckBtnLedger').addEventListener('click', openMarketDeck);
+
+/* ================= GIVE A LOAN ================= */
+$('#giveLoanBtn').addEventListener('click', ()=>{
+  const body = $('#modalBody');
+  body.innerHTML = `
+    <h3>💰 Give a Loan to a Player</h3>
+    <p class="desc">You hand over cash now and collect an installment every payday. The borrower logs their own side under "Take Loan / Solfa" on their device.</p>
+    <div class="modal-field"><label>Borrower's name</label><input id="mf_bname" type="text" placeholder="Ahmed"></div>
+    <div class="modal-field"><label>Lump sum you're handing over</label><input id="mf_blump" type="number" placeholder="3000"></div>
+    <div class="modal-field"><label>Installment you'll collect / month</label><input id="mf_binst" type="number" placeholder="400"></div>
+    <div class="modal-actions">
+      <button class="cancel" id="modalCancel">Cancel</button>
+      <button class="confirm" id="modalConfirm">Lend &amp; continue</button>
+    </div>`;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = closeModal;
+  $('#modalConfirm').onclick = ()=>{
+    const name = $('#mf_bname').value || 'Player';
+    const lump = Number($('#mf_blump').value||0);
+    const inst = Number($('#mf_binst').value||0);
+    attemptSpend(lump, `Lending to ${name}`, ()=>{
+      state.loansOut.push({name, lump, installment:inst});
+      toast(`Handed ${name} ${fmt(lump)} EGP in bills · collecting +${fmt(inst)}/mo`);
+      closeModal();
+    });
+  };
+});
+
+/* ================= NEW PURCHASE CATEGORIES ================= */
+$('#fixedIncomeBtn').addEventListener('click', ()=>{
+  openFlatAssetPurchase('Fixed Income', ['Small Investment Certificate','Large Investment Certificate','Government Sukuk','Savings Cloud']);
+});
+$('#metalsBtn').addEventListener('click', ()=>{
+  openHoldingPurchase('Precious Metal', ['Gold Certificate','Silver Bullion']);
+});
+$('#currencyBtn').addEventListener('click', ()=>{
+  openHoldingPurchase('Currency', ['USD']);
+});
+$('#landBtn').addEventListener('click', ()=>{
+  openFlatAssetPurchase('Land', ['5 Feddan Plot','20 Feddan Plot']);
+});
+$('#fundsBtn').addEventListener('click', ()=>{
+  openHoldingPurchase('Fund', ['REIT','EGX 30','Islamic Fund']);
+});
+/* ================= JUMP TO SAFE ZONE ================= */
+$('#jumpBtn').addEventListener('click', ()=>{
+  const {inc} = totals();
+  state.safeZone.earnings = Math.round(inc*10);
+  state.safeZone.cash = Math.round(state.cash*10);
+  mode = 'traditional';
+  $('#modePill').textContent = 'Safe Zone';
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  $('.tab[data-screen="safezone"]').classList.add('active');
+  $('#screen-safezone').classList.add('active');
+  render();
+  toast(`Jumped to Safe Zone! Earnings ×10 → ${fmt(state.safeZone.earnings)} EGP/mo`);
+});
+
+/* ================= SAFE ZONE EVENTS ================= */
+$('#szPaydayBtn').addEventListener('click', ()=>{
+  const sz = state.safeZone;
+  const net = Math.max(0, sz.earnings - sz.debtDrag);
+  snapshotForUndo();
+  sz.cash += net;
+  render();
+  toast(`Collected ${fmt(net)} EGP${sz.debtDrag? ' (after '+fmt(sz.debtDrag)+' installment drag)':''}`);
+});
+
+$('#szInvestBtn').addEventListener('click', ()=>{
+  const body = $('#modalBody');
+  body.innerHTML = `
+    <h3>📊 Investment Card</h3>
+    <p class="desc">Pay the cash cost outright, or risk it for free equity.</p>
+    <div class="modal-actions">
+      <button class="confirm" id="iPay" style="background:var(--teal); color:#fff;">Pay cash cost</button>
+      <button class="confirm" id="iRisk" style="background:var(--gold); color:var(--ink);">Risk the dice</button>
+    </div>
+    <div class="modal-actions"><button class="cancel" id="modalCancel" style="flex:1;">Cancel</button></div>
+  `;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = closeModal;
+
+  $('#iPay').onclick = ()=>{
+    body.innerHTML = `
+      <h3>Pay cash cost</h3>
+      <div class="modal-field"><label>Company / startup name</label><input id="mf_name" type="text" placeholder="e.g. Nawy equity"></div>
+      <div class="modal-field"><label>Cash cost</label><input id="mf_cost" type="number" placeholder="30000"></div>
+      <div class="modal-field"><label>Earnings it adds / month</label><input id="mf_add" type="number" placeholder="3000"></div>
+      <div class="modal-actions">
+        <button class="cancel" id="modalCancel">Cancel</button>
+        <button class="confirm" id="modalConfirm">Invest</button>
+      </div>`;
+    $('#modalCancel').onclick = closeModal;
+    $('#modalConfirm').onclick = ()=>{
+      const name = $('#mf_name').value||'Investment', cost = Number($('#mf_cost').value||0), add = Number($('#mf_add').value||0);
+      attemptSpend(cost, `Investing in "${name}"`, ()=>{
+        state.safeZone.earnings += add;
+        toast(`Paid ${fmt(cost)} EGP · +${fmt(add)}/mo Earnings added`);
+        closeModal();
+      }, 'safe');
+    };
+  };
+
+  $('#iRisk').onclick = ()=>{
+    body.innerHTML = `
+      <h3>Risk the dice</h3>
+      <p class="desc">Set your odds of success, then roll. Win it for free — no cash lost either way.</p>
+      <div class="modal-field"><label>Company / startup name</label><input id="mf_name2" type="text" placeholder="e.g. Startup equity"></div>
+      <div class="modal-field"><label>Chance of success (%)</label><input id="mf_chance" type="number" placeholder="33"></div>
+      <div class="modal-field"><label>Earnings it adds / month if won</label><input id="mf_add2" type="number" placeholder="3000"></div>
+      <div class="modal-actions">
+        <button class="cancel" id="modalCancel">Cancel</button>
+        <button class="confirm" id="modalConfirm">🎲 Roll</button>
+      </div>`;
+    $('#modalCancel').onclick = closeModal;
+    $('#modalConfirm').onclick = ()=>{
+      const name = $('#mf_name2').value||'Investment', chance = Number($('#mf_chance').value||33), add = Number($('#mf_add2').value||0);
+      const won = Math.random()*100 < chance;
+      if(won){ state.safeZone.earnings += add; render(); toast(`🎉 Rolled it! "${name}" equity won for free · +${fmt(add)}/mo`); }
+      else { toast(`Missed the roll — "${name}" equity not acquired, no cash lost`); }
+      closeModal();
+    };
+  };
+});
+
+$('#szDreamBtn').addEventListener('click', ()=>{
+  const sz = state.safeZone;
+  const body = $('#modalBody');
+  if(sz.dreamCost>0 && sz.cash>=sz.dreamCost){
+    body.innerHTML = `
+      <h3>🏝️ Buy your Dream</h3>
+      <p class="desc">You've saved enough for "${sz.dreamName}" (${fmt(sz.dreamCost)} EGP). Buying it wins the game.</p>
+      <div class="modal-actions">
+        <button class="cancel" id="modalCancel">Not yet</button>
+        <button class="confirm" id="modalConfirm" style="background:var(--gold); color:var(--ink);">Buy it &amp; win!</button>
+      </div>`;
+    $('#modalBackdrop').classList.add('show');
+    $('#modalCancel').onclick = closeModal;
+    $('#modalConfirm').onclick = ()=>{
+      sz.cash -= sz.dreamCost; sz.won = true; render();
+      toast(`🏆 Bought "${sz.dreamName}" — The Dreamer wins Felosy!`);
+      closeModal();
+    };
+    return;
+  }
+  body.innerHTML = `
+    <h3>🏝️ Set your Dream Card</h3>
+    <p class="desc">Save Cash on Hand until it covers this. Buying it outright wins the game.</p>
+    <div class="modal-field"><label>Dream name</label><input id="mf_dn" type="text" placeholder="e.g. Villa by the Sea"></div>
+    <div class="modal-field"><label>Cost to buy outright</label><input id="mf_dc" type="number" placeholder="400000"></div>
+    <div class="modal-actions">
+      <button class="cancel" id="modalCancel">Cancel</button>
+      <button class="confirm" id="modalConfirm">Set Dream</button>
+    </div>`;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = closeModal;
+  $('#modalConfirm').onclick = ()=>{
+    sz.dreamName = $('#mf_dn').value || 'Dream';
+    sz.dreamCost = Number($('#mf_dc').value||0);
+    render();
+    toast(`Dream set: "${sz.dreamName}" for ${fmt(sz.dreamCost)} EGP`);
+    closeModal();
+  };
+});
+
+$('#szDonateBtn').addEventListener('click', ()=>{
+  attemptSpend(50000, 'Charity donation (Safe Zone)', ()=>{
+    state.safeZone.earnings *= 2;
+    state.safeZone.donateCount++;
+    render();
+    toast(`Donated 50,000 EGP · Earnings doubled (×${Math.pow(2,state.safeZone.donateCount)} total) → ${fmt(state.safeZone.earnings)}/mo`);
+  }, 'safe');
+});
+
+$('#szZakatBtn').addEventListener('click', ()=>{
+  const amt = Math.round(state.safeZone.cash * 0.025);
+  attemptSpend(amt, 'Zakat (2.5% of cash)', ()=>{
+    state.safeZone.zakatBonus = true; render();
+    toast(`Paid Zakat of ${fmt(amt)} EGP · roll 3 dice until you pass Zakat again 🎲🎲🎲`);
+  }, 'safe');
+});
+$('#clearZakatBonus').addEventListener('click', ()=>{
+  state.safeZone.zakatBonus = false; render();
+  toast('Zakat bonus cleared');
+});
+
+$('#szRobberyBtn').addEventListener('click', ()=>{
+  const lost = state.safeZone.cash;
+  state.safeZone.cash = 0; render();
+  toast(`🥷 Robbed! Lost all ${fmt(lost)} EGP in cash`);
+});
+$('#szBustedBtn').addEventListener('click', ()=>{
+  const lost = Math.round(state.safeZone.cash*0.5);
+  state.safeZone.cash -= lost; state.safeZone.skipTurns += 1; render();
+  toast(`🚨 Busted! Lost ${fmt(lost)} EGP · skip your next turn`);
+});
+$('#szEvilEyeBtn').addEventListener('click', ()=>{
+  state.safeZone.skipTurns += 2; render();
+  toast(`🧿 Evil eye — skip your next 2 turns`);
+});
+
+/* ================= RESET ================= */
+$('#resetBtn').addEventListener('click', ()=>{
+  const body = $('#modalBody');
+  body.innerHTML = `
+    <h3>⟲ Reset</h3>
+    <p class="desc">Clear numbers if something's off, or start a fresh level.</p>
+    <div class="modal-actions" style="flex-direction:column; gap:8px;">
+      <button class="confirm" id="rRestart" style="background:var(--gold); color:var(--ink);">🔄 Restart this zone (keep mode)</button>
+      <button class="confirm" id="rNewGame" style="background:var(--red); color:#fff;">🆕 New Game (choose mode again)</button>
+    </div>
+    <div class="modal-actions"><button class="cancel" id="modalCancel" style="flex:1;">Cancel</button></div>
+  `;
+  $('#modalBackdrop').classList.add('show');
+  $('#modalCancel').onclick = closeModal;
+  $('#rRestart').onclick = ()=>{
+    closeModal();
+    state = freshState();
+    logSeq = 0;
+    openSetup(mode);
+  };
+  $('#rNewGame').onclick = ()=>{
+    state = freshState();
+    logSeq = 0;
+    mode = null;
+    $('#appRoot').style.display = 'none';
+    $('#setupScreen').style.display = 'none';
+    $('#startScreen').style.display = 'block';
+    closeModal();
+  };
+});
+
+/* ================= MODE SELECTION ================= */
+function applyModeDefaults(m){
+  if(m==='hustle'){
+    $('#modePill').textContent = 'Hustle Zone';
+    $('#safeZoneTab').style.display = 'none';
+    document.querySelectorAll('.tab[data-screen="ledger"],.tab[data-screen="assets"],.tab[data-screen="events"]').forEach(t=>t.style.display='block');
+    activateTab('ledger');
+  } else if(m==='safe'){
+    $('#modePill').textContent = 'Safe Zone';
+    $('#safeZoneTab').style.display = 'block';
+    document.querySelectorAll('.tab[data-screen="ledger"],.tab[data-screen="assets"],.tab[data-screen="events"]').forEach(t=>t.style.display='none');
+    activateTab('safezone');
+  } else { // traditional
+    $('#modePill').textContent = 'Hustle Zone';
+    $('#safeZoneTab').style.display = 'block';
+    document.querySelectorAll('.tab[data-screen="ledger"],.tab[data-screen="assets"],.tab[data-screen="events"]').forEach(t=>t.style.display='block');
+    activateTab('ledger');
+  }
+  render();
+}
+function activateTab(name){
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));
+  const tabEl = document.querySelector(`.tab[data-screen="${name}"]`);
+  if(tabEl) tabEl.classList.add('active');
+  $('#screen-'+name).classList.add('active');
+}
+
+/* ================= SETUP SCREEN (ask before assuming any numbers) ================= */
+function openSetup(m){
+  mode = m;
+  $('#startScreen').style.display = 'none';
+  $('#appRoot').style.display = 'none';
+  $('#setupScreen').style.display = 'block';
+  ['setName','setJob','setSalary','setExp','setCashInput','setEarnings','setCashInputSafe'].forEach(id=>{ const el=$('#'+id); if(el) el.value=''; });
+  const isSafe = (m==='safe');
+  $('#hustleSetupFields').style.display = isSafe ? 'none' : 'block';
+  $('#safeSetupFields').style.display = isSafe ? 'block' : 'none';
+  $('#setupSub').textContent = isSafe
+    ? "Fill in your Purple Sheet starting numbers"
+    : "Roll for your Job card, then fill in your Green Sheet";
+  $('#setupCashflowCard').style.display = isSafe ? 'none' : 'block';
+  updateSetupPreview();
+}
+function updateSetupPreview(){
+  const salary = Number($('#setSalary').value||0);
+  const exp = Number($('#setExp').value||0);
+  const flow = salary - exp;
+  $('#setCashflowPreview').innerHTML = (flow>=0?fmt(flow):'-'+fmt(Math.abs(flow))) + ' <small>EGP</small>';
+  $('#setCashflowPreview').style.color = flow>=0 ? 'var(--papyrus)' : '#ff9d92';
+}
+$('#setSalary').addEventListener('input', updateSetupPreview);
+$('#setExp').addEventListener('input', updateSetupPreview);
+
+function syncLedgerInputs(){
+  document.querySelectorAll('.inc').forEach(el=>{
+    const k = el.dataset.key;
+    if(state.income[k] !== undefined && document.activeElement !== el) el.value = state.income[k];
+  });
+  document.querySelectorAll('.exp').forEach(el=>{
+    const k = el.dataset.key;
+    if(state.expense[k] !== undefined && document.activeElement !== el) el.value = state.expense[k];
+  });
+}
+
+$('#setupConfirmBtn').addEventListener('click', ()=>{
+  const name = $('#setName').value || 'Player';
+  $('#pname').value = name;
+  if(mode==='safe'){
+    state.safeZone.earnings = Number($('#setEarnings').value||0);
+    state.safeZone.cash = Number($('#setCashInputSafe').value||0);
+    $('#pjob').value = '';
+  } else {
+    state.income.salary = Number($('#setSalary').value||0);
+    state.expense.base = Number($('#setExp').value||0);
+    state.cash = Number($('#setCashInput').value||0);
+    $('#pjob').value = $('#setJob').value || '';
+    syncLedgerInputs();
+  }
+  $('#setupScreen').style.display = 'none';
+  $('#appRoot').style.display = 'block';
+  applyModeDefaults(mode);
+  toast(`Playing as ${name}${$('#pjob').value? ' · '+$('#pjob').value : ''}`);
+});
+
+function chooseMode(m){ openSetup(m); }
+$('#modeHustle').addEventListener('click', ()=> chooseMode('hustle'));
+$('#modeSafe').addEventListener('click', ()=> chooseMode('safe'));
+$('#modeTraditional').addEventListener('click', ()=> chooseMode('traditional'));
+</script>
+
+</body>
+</html>
